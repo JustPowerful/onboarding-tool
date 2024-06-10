@@ -26,4 +26,73 @@ model User {
   role Role
   email String @unique
   password String
+  workspaces UserInWorkspace[]
+  assignments Assignment[]
+}
+
+model UserInWorkspace {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId Int
+}
+
+model Workspace {
+  id Int @id @default(autoincrement())
+  name String
+  users UserInWorkspace[]
+  checklists Checklist[]
+}
+
+model Checklist {
+  id Int @id @default(autoincrement())
+  name String
+  workspaceId Int
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  tasks Task[]
+}
+
+enum TASK_STATUS {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  dueDate DateTime
+  status TASK_STATUS
+  checklistId Int
+  checklist Checklist @relation(fields: [checklistId], references: [id])
+  assignements Assignment[]
+  proposals Proposal[]
+}
+
+model Assignment {
+  id Int @id @default(autoincrement())
+  taskId Int
+  task Task @relation(fields: [taskId], references: [id])
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+}
+
+// task solution proposals from employees
+model Proposal {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  stack String? // tech stack user (optional)
+  status PROPOSAL_STATUS
+  taskId Int
+  task Task @relation(fields: [taskId], references: [id])
+}
+
+enum PROPOSAL_STATUS {
+  PENDING
+  APPROVED
+  REJECTED
 }

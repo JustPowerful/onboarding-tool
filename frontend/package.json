@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "axios": "^1.7.2",
+    "lucide-vue-next": "^0.391.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
     "vuetify": "^3.6.8"

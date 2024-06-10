@@ -2,5 +2,5 @@
 
 * {
   font-family: "Poppins", sans-serif;
-  @apply box-border text-zinc-800;
+  @apply box-border;
 }
