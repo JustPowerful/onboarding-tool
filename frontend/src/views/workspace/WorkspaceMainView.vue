@@ -80,7 +80,7 @@ onMounted(async () => {
   <div class="p-14">
     <div class="flex justify-between items-center">
       <div>
-        <h1 class="text-2xl font-semibold mb-1">
+        <h1 v-if="user" class="text-2xl font-semibold mb-1">
           Welcome {{ user?.firstname }}, Consult your workspaces
         </h1>
         <span class="text-zinc-500"

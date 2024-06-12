@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { AxiosPrivate } from "@/api";
 import TabButton from "@/components/workspace/TabButton.vue";
+import BoardTab from "@/components/workspace/tabs/BoardTab.vue";
 import type { WorkspaceData, WorkspaceTab } from "@/types";
 import { Settings, Table2, User } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
@@ -59,7 +60,11 @@ onMounted(async () => {
         </div>
         <div class="w-full"></div>
       </div>
-      <div class="bg-zinc-200"></div>
+      <div class="relative">
+        <div v-if="tab === 'BOARD'">
+          <BoardTab v-if="workspace" :workspaceId="workspaceId" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
