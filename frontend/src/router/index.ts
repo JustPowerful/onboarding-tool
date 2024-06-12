@@ -24,6 +24,11 @@ const router = createRouter({
       name: "workspaces",
       component: () => import("@/views/workspace/WorkspaceMainView.vue"),
     },
+    {
+      path: "/workspace/:id",
+      name: "workspace",
+      component: () => import("@/views/workspace/WorkspaceTableView.vue"),
+    },
   ],
 });
 

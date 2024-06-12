@@ -112,3 +112,26 @@ export async function getWorkspacesHandler(
     return reply.code(500).send({ message: "Internal Server Error" });
   }
 }
+
+export async function getWorkspaceByIdHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { id } = request.params as { id: string };
+  try {
+    const workspace = await request.server.prisma.workspace.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+    if (!workspace) {
+      return reply.code(404).send({ message: "Workspace not found" });
+    }
+    return reply.code(200).send({
+      message: "Workspace fetched successfully",
+      workspace,
+    });
+  } catch (error) {
+    return reply.code(500).send({ message: "Internal Server Error" });
+  }
+}

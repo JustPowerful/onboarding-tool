@@ -51,6 +51,7 @@ model Checklist {
   workspaceId Int
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   tasks Task[]
+  pos Int // position in the workspace
 }
 
 enum TASK_STATUS {
@@ -67,9 +68,10 @@ model Task {
   dueDate DateTime
   status TASK_STATUS
   checklistId Int
-  checklist Checklist @relation(fields: [checklistId], references: [id])
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
   assignements Assignment[]
   proposals Proposal[]
+  pos Int // position in the checklist  
 }
 
 model Assignment {

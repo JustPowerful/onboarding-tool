@@ -2,11 +2,29 @@
 import { onMounted, ref } from "vue";
 import { AxiosPrivate } from "@/api";
 import type { UserData, WorkspaceData } from "@/types";
-import { Plus } from "lucide-vue-next";
+import { Plus, X } from "lucide-vue-next";
 import WorkspaceButton from "@/components/workspace/WorkspaceButton.vue";
+import BaseInput from "@/components/form/BaseInput.vue";
 
 const user = ref<UserData | null>(null);
 const workspaces = ref<WorkspaceData[]>([]);
+
+const toggleCreate = ref(false);
+const name = ref("");
+const loading = ref(false);
+
+async function createWorkspace() {
+  try {
+    loading.value = true;
+    await AxiosPrivate.post("/workspace/create", { name: name.value });
+    toggleCreate.value = false;
+    await fetchWorkspaces();
+  } catch (error) {
+    throw error;
+  } finally {
+    loading.value = false;
+  }
+}
 
 async function fetchUser() {
   try {
@@ -32,6 +50,33 @@ onMounted(async () => {
 });
 </script>
 <template>
+  <div
+    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center"
+    v-if="toggleCreate"
+  >
+    <div class="relative bg-white p-8 rounded-md w-96">
+      <button class="absolute top-4 right-4 text-red-500">
+        <X :size="20" @click="toggleCreate = !toggleCreate" />
+      </button>
+      <h1 class="text-2xl font-semibold mb-4">Create a new workspace</h1>
+      <div class="flex flex-col gap-4">
+        <BaseInput
+          label="Workspace name"
+          v-model="name"
+          placeholder="Workspace's name"
+        />
+        <button
+          @click="createWorkspace"
+          class="bg-red-500 text-white p-2 rounded-md"
+        >
+          <span v-if="loading">
+            <v-progress-circular indeterminate color="white" size="20" />
+          </span>
+          <span v-else>Create</span>
+        </button>
+      </div>
+    </div>
+  </div>
   <div class="p-14">
     <div class="flex justify-between items-center">
       <div>
@@ -44,6 +89,7 @@ onMounted(async () => {
       </div>
       <div>
         <button
+          @click="toggleCreate = !toggleCreate"
           class="bg-red-500 text-white flex items-center gap-1 p-2 rounded-md"
         >
           New workspace <Plus :size="18" />

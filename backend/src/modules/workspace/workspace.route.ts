@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   createWorkspaceHandler,
   deleteWorkspaceHandler,
+  getWorkspaceByIdHandler,
   getWorkspacesHandler,
   updateWorkspaceHandler,
 } from "./workspace.controller";
@@ -47,6 +48,17 @@ async function workspaceRoute(server: FastifyInstance) {
       preHandler: [authMiddleware],
     },
     getWorkspacesHandler
+  );
+
+  server.get(
+    "/get/:id",
+    {
+      schema: {
+        params: $ref("getWorkspaceSchema"),
+      },
+      preHandler: [authMiddleware],
+    },
+    getWorkspaceByIdHandler
   );
 }
 
