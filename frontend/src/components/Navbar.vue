@@ -8,7 +8,7 @@ const logout = () => {
 </script>
 <template>
   <div
-    class="flex justify-between items-center max-h-14 min-h-14 bg-zinc-900 px-5 fixed top-0 left-0 w-full"
+    class="flex justify-between items-center max-h-14 min-h-14 bg-zinc-900 px-5 fixed top-0 left-0 w-full z-50"
   >
     <div class="text-red-500 font-bold text-xl">OBT</div>
     <div>

@@ -80,7 +80,7 @@ async function saveData() {
 <template>
   <div
     v-if="toggleEdit"
-    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center"
+    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 flex items-center justify-center"
   >
     <div class="w-[300px] bg-white p-4 rounded-md relative">
       <button class="absolute top-2 right-2 text-red-500">
@@ -152,7 +152,7 @@ async function saveData() {
     </div>
   </div>
   <RouterLink :to="`/workspace/${workspace.id}`">
-    <div class="relative border-2 border-zinc-200 rounded-md p-4">
+    <div class="relative border-2 border-zinc-200 bg-white rounded-md p-4">
       <div class="absolute top-3 right-4">
         <button ref="menuButtonRef" class="text-zinc-600">
           <span><Ellipsis :size="20" /></span>
@@ -161,7 +161,7 @@ async function saveData() {
           id="menu"
           v-if="toggleMenu"
           ref="menuRef"
-          class="absolute w-[150px] left-1/2 -translate-x-1/2 bg-white shadow-md shadow-zinc-300 rounded-md overflow-hidden"
+          class="absolute w-[150px] left-1/2 -translate-x-1/2 bg-white shadow-md shadow-zinc-300 rounded-md overflow-hidden z-40"
         >
           <button
             @click.prevent="toggleEdit = !toggleEdit"

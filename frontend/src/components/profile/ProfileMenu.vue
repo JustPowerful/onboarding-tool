@@ -42,7 +42,7 @@ function handleClickOutside(event: MouseEvent) {
     <div
       ref="menuRef"
       v-if="toggle"
-      class="absolute bg-zinc-100 top-12 right-0 shadow-lg shadow-zinc-500 w-60 p-4 rounded-lg"
+      class="fixed bg-zinc-100 opacity-100 top-14 right-4 shadow-lg shadow-zinc-500 w-60 p-4 rounded-lg"
     >
       <div class="flex items-center justify-center flex-col gap-1 pb-2">
         <div

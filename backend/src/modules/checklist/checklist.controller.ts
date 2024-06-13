@@ -31,14 +31,16 @@ export async function createChecklist(
       order = checklists[0].pos + 1;
     }
 
-    await request.server.prisma.checklist.create({
+    const checklist = await request.server.prisma.checklist.create({
       data: {
         name: name,
         workspaceId: Number(workspaceId),
         pos: order,
       },
     });
-    return reply.code(201).send({ message: "Checklist created successfully" });
+    return reply
+      .code(201)
+      .send({ message: "Checklist created successfully", checklist });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === "P2003") {
