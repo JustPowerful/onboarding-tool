@@ -17,21 +17,23 @@ const toggleAddTask = ref(false);
 const createTaskLoading = ref(false);
 const taskName = ref("");
 
-// async function createTask() {
-//   try {
-//     createTaskLoading.value = true;
-//     await AxiosPrivate.post(`/task/create`, {
-//       name: taskName.value,
-//       checklistId: props.checklist.id,
-//     });
-//     await props.fetchChecklists();
-//   } catch (error) {
-//     throw error;
-//   } finally {
-//     createTaskLoading.value = false;
-//     toggleAddTask.value = false;
-//   }
-// }
+async function createTask() {
+  try {
+    createTaskLoading.value = true;
+    await AxiosPrivate.post(`/task/create`, {
+      name: taskName.value,
+      checklistId: props.checklist.id,
+    });
+    await props.fetchChecklists();
+  } catch (error) {
+    throw error;
+  } finally {
+    createTaskLoading.value = false;
+    toggleAddTask.value = false;
+  }
+}
+
+const disabledDraggable = ref(false);
 
 const menuButtonRef = ref<HTMLButtonElement | null>(null);
 const menuRef = ref<HTMLDivElement | null>(null);
@@ -235,9 +237,23 @@ onUnmounted(() => {
         @end="console.log(checklist)"
         class="rounded-md flex-grow flex flex-col gap-2"
         ghost-class="drag-task"
+        :disabled="disabledDraggable"
       >
         <template #item="{ element: task }">
-          <Task :task="task" />
+          <Task
+            :fetch-checklists="fetchChecklists"
+            :enable-dragging="
+              () => {
+                disabledDraggable = false;
+              }
+            "
+            :disable-dragging="
+              () => {
+                disabledDraggable = true;
+              }
+            "
+            :task="task"
+          />
         </template>
       </draggable>
 
@@ -251,7 +267,10 @@ onUnmounted(() => {
       <div v-else>
         <BaseInput label="" v-model="taskName" placeholder="Task name" />
         <div class="grid grid-cols-[9fr_2fr] gap-2 mt-1">
-          <button class="bg-red-500 text-white p-1 rounded-md">
+          <button
+            @click="createTask"
+            class="bg-red-500 text-white p-1 rounded-md"
+          >
             <span v-if="!createTaskLoading">Add</span>
             <span v-else>
               <v-progress-circular

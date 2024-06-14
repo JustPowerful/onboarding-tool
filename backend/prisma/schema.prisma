@@ -64,9 +64,9 @@ enum TASK_STATUS {
 model Task {
   id Int @id @default(autoincrement())
   name String
-  description String
-  dueDate DateTime
-  status TASK_STATUS
+  description String?
+  dueDate DateTime?
+  status TASK_STATUS @default(PENDING)
   checklistId Int
   checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
   assignements Assignment[]

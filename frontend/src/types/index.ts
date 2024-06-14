@@ -21,6 +21,7 @@ export interface ChecklistData {
 export interface TaskData {
   id: number;
   name: string;
+  description?: string;
   checklistId: number;
 }
 
