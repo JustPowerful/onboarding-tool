@@ -94,6 +94,9 @@ export async function getAllChecklist(
       },
       include: {
         tasks: {
+          orderBy: {
+            pos: "asc",
+          },
           include: {
             assignements: {
               include: {
@@ -128,6 +131,20 @@ export async function updateChecklistOrder(
           pos: index,
         },
       });
+      const tasks = checklist.tasks;
+      if (tasks) {
+        tasks.forEach(async (task, index) => {
+          await request.server.prisma.task.update({
+            where: {
+              id: task.id,
+            },
+            data: {
+              checklistId: checklist.id,
+              pos: index,
+            },
+          });
+        });
+      }
     });
     return reply
       .code(200)

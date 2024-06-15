@@ -38,6 +38,17 @@ async function fetchChecklists() {
   }
 }
 
+async function saveOrder() {
+  try {
+    const { data } = await AxiosPrivate.patch("/checklist/updateorder", {
+      checklists: checklists.value,
+    });
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function createChecklist() {
   try {
     createLoading.value = true;
@@ -93,7 +104,7 @@ onMounted(async () => {
   </div>
   <div class="absolute top-0 left-0 w-full h-full bg-white p-10">
     <!-- create checklist button -->
-    <div class="absolute top-4 right-4">
+    <div class="absolute top-4 right-4 z-40">
       <button
         @click="toggleCreate = !toggleCreate"
         class="bg-red-500 text-white p-2 rounded-md flex items-center"
@@ -110,11 +121,12 @@ onMounted(async () => {
       tag="Checklist"
       item-key="id"
       @start="console.log('start')"
-      @end="console.log(checklists)"
+      @end="saveOrder"
       ghost-class="drag-checklist"
     >
       <template #item="{ element: checklist }">
         <Checklist
+          :updateorder="saveOrder"
           :enable-dragging="enableDragging"
           :disable-dragging="disableDragging"
           :fetch-checklists="fetchChecklists"

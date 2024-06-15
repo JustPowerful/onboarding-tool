@@ -8,6 +8,7 @@ import { AxiosPrivate } from "@/api";
 import BaseInput from "../form/BaseInput.vue";
 const props = defineProps<{
   checklist: ChecklistData;
+  updateorder: () => void;
   fetchChecklists: () => Promise<void>;
   disableDragging: () => void;
   enableDragging: () => void;
@@ -234,7 +235,7 @@ onUnmounted(() => {
         :group="{ name: 'tasks' }"
         item-key="id"
         tag="div"
-        @end="console.log(checklist)"
+        @end="updateorder"
         class="rounded-md flex-grow flex flex-col gap-2"
         ghost-class="drag-task"
         :disabled="disabledDraggable"
