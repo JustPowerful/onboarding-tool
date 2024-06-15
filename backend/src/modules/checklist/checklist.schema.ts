@@ -78,25 +78,25 @@ const updateChecklistSchema = z.object({
     })
     .min(2)
     .max(50),
-  tasks: z.array(
-    z.object({
-      id: z.number({
-        invalid_type_error: "Id must be a number",
-        required_error: "Id is required",
-      }),
-      name: z
-        .string({
-          invalid_type_error: "Name must be a string",
-          required_error: "Name is required",
-        })
-        .min(2)
-        .max(50),
-      pos: z.number({
-        invalid_type_error: "Pos must be a number",
-        required_error: "Pos is number",
-      }),
-    })
-  ),
+  // tasks: z.array(
+  //   z.object({
+  //     id: z.number({
+  //       invalid_type_error: "Id must be a number",
+  //       required_error: "Id is required",
+  //     }),
+  //     name: z
+  //       .string({
+  //         invalid_type_error: "Name must be a string",
+  //         required_error: "Name is required",
+  //       })
+  //       .min(2)
+  //       .max(50),
+  //     pos: z.number({
+  //       invalid_type_error: "Pos must be a number",
+  //       required_error: "Pos is number",
+  //     }),
+  //   })
+  // ),
 });
 
 const deleteChecklistSchema = z.object({

@@ -60,6 +60,7 @@ async function saveChange() {
   } finally {
     editLoading.value = false;
     toggleEdit.value = false;
+    props.enableDragging();
   }
 }
 
