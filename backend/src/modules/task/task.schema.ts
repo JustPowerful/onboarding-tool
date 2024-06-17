@@ -19,12 +19,24 @@ const deleteTaskSchema = z.object({
   }),
 });
 
+const updateTaskSchema = z.object({
+  id: z.number({
+    invalid_type_error: "Task id must be a number",
+    required_error: "Task id is required",
+  }),
+  ...taskCore,
+  description: z.string({}).optional(),
+  dueDate: z.string({}).optional(),
+});
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
+export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export const { schemas: taskSchemas, $ref } = buildJsonSchemas(
   {
     createTaskSchema,
     deleteTaskSchema,
+    updateTaskSchema,
   },
   {
     $id: "task",

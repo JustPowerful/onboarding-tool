@@ -1,5 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { CreateTaskInput, DeleteTaskInput } from "./task.schema";
+import {
+  CreateTaskInput,
+  DeleteTaskInput,
+  UpdateTaskInput,
+} from "./task.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function createTask(request: FastifyRequest, reply: FastifyReply) {
@@ -54,6 +58,27 @@ export async function deleteTask(request: FastifyRequest, reply: FastifyReply) {
     }
     return reply.code(500).send({
       message: "Failed to delete task",
+    });
+  }
+}
+
+export async function updateTask(request: FastifyRequest, reply: FastifyReply) {
+  const { id, name, description, dueDate } = request.body as UpdateTaskInput;
+  try {
+    await request.server.prisma.task.update({
+      where: { id: Number(id) },
+      data: {
+        name: name,
+        description: description,
+        dueDate: dueDate,
+      },
+    });
+    return reply.code(200).send({
+      message: "Task updated successfully",
+    });
+  } catch (error) {
+    return reply.code(500).send({
+      message: "Failed to update task",
     });
   }
 }

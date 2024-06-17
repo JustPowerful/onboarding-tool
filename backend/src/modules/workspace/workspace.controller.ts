@@ -135,3 +135,9 @@ export async function getWorkspaceByIdHandler(
     return reply.code(500).send({ message: "Internal Server Error" });
   }
 }
+
+export async function addMember(request: FastifyRequest, reply: FastifyReply) {}
+export async function removeMember(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {}

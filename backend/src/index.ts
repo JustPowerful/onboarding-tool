@@ -10,12 +10,14 @@ import authRoute from "./modules/auth/auth.route";
 import workspaceRoute from "./modules/workspace/workspace.route";
 import checklistRoute from "./modules/checklist/checklist.route";
 import taskRoute from "./modules/task/task.route";
+import memberRoute from "./modules/member/member.route";
 
 // schemas
 import { userSchemas } from "./modules/auth/auth.schema";
 import { workspaceSchemas } from "./modules/workspace/workspace.schema";
 import { checklistSchemas } from "./modules/checklist/checklist.schema";
 import { taskSchemas } from "./modules/task/task.schema";
+import { memberSchemas } from "./modules/member/member.schema";
 
 const server = Fastify();
 
@@ -25,6 +27,7 @@ for (const schema of [
   ...workspaceSchemas,
   ...checklistSchemas,
   ...taskSchemas,
+  ...memberSchemas,
 ]) {
   server.addSchema(schema);
 }
@@ -37,6 +40,7 @@ server.register(authRoute, { prefix: "/api/auth" });
 server.register(workspaceRoute, { prefix: "/api/workspace" });
 server.register(checklistRoute, { prefix: "/api/checklist" });
 server.register(taskRoute, { prefix: "/api/task" });
+server.register(memberRoute, { prefix: "/api/member" });
 
 const PORT = 3000;
 server.listen({ port: PORT }, (err, address) => {

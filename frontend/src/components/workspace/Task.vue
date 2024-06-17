@@ -6,6 +6,7 @@ import {
   Ellipsis,
   LayoutList,
   Save,
+  Trash,
   Users,
   X,
 } from "lucide-vue-next";
@@ -24,12 +25,33 @@ const toggleTaskMenu = ref(false);
 const name = ref(props.task.name);
 const description = ref(props.task.description);
 
+const deleteLoading = ref(false);
 async function deleteTask() {
   try {
+    deleteLoading.value = true;
     await AxiosPrivate.delete(`/task/delete/${props.task.id}`);
     await props.fetchChecklists();
   } catch (error) {
     throw error;
+  } finally {
+    deleteLoading.value = false;
+  }
+}
+const updateLoading = ref(false);
+async function updateTask() {
+  try {
+    updateLoading.value = true;
+    await AxiosPrivate.patch(`/task/update`, {
+      id: props.task.id,
+      name: name.value,
+      description: description.value,
+    });
+    props.fetchChecklists();
+    toggleTaskMenu.value = false;
+    props.enableDragging();
+  } catch (error) {
+  } finally {
+    updateLoading.value = false;
   }
 }
 </script>
@@ -94,29 +116,60 @@ async function deleteTask() {
                 ></textarea>
               </div>
               <button
+                @click="updateTask"
                 class="flex items-center justify-center gap-1 text-white bg-red-500 p-2 rounded-md"
               >
-                <span>
-                  <Save :size="18" />
+                <span
+                  v-if="!updateLoading"
+                  class="flex justify-center items-center gap-1"
+                >
+                  <Save :size="18" /> Update</span
+                >
+                <span v-else>
+                  <v-progress-circular
+                    indeterminate
+                    size="24"
+                    color="white"
+                  ></v-progress-circular>
                 </span>
-                <span>Update</span>
               </button>
             </div>
           </div>
-          <div class="pt-5 flex flex-col gap-2">
-            <small class="text-red-400">Manage your task card</small>
-            <button
-              class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
-            >
-              <Users :size="18" />
-              Assigned members
-            </button>
-            <button
-              class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
-            >
-              <CheckCheck :size="18" />
-              Proposed Solutions
-            </button>
+          <div class="pt-5 flex flex-col justify-between">
+            <div class="flex flex-col gap-2">
+              <small class="text-red-400">Manage your task card</small>
+              <button
+                class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
+              >
+                <Users :size="18" />
+                Assigned members
+              </button>
+              <button
+                class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
+              >
+                <CheckCheck :size="18" />
+                Proposed Solutions
+              </button>
+            </div>
+            <div>
+              <button
+                @click="deleteTask"
+                class="bg-red-500 text-white p-2 rounded-md w-full flex gap-1 justify-center items-center"
+              >
+                <span
+                  v-if="!deleteLoading"
+                  class="flex items-center justify-center gap-1"
+                  ><Trash :size="18" /> Delete Task</span
+                >
+                <span v-else>
+                  <v-progress-circular
+                    indeterminate
+                    size="24"
+                    color="white"
+                  ></v-progress-circular>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

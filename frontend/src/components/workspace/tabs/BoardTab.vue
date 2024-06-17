@@ -120,7 +120,6 @@ onMounted(async () => {
       v-model="checklists"
       tag="Checklist"
       item-key="id"
-      @start="console.log('start')"
       @end="saveOrder"
       ghost-class="drag-checklist"
     >
@@ -141,4 +140,3 @@ onMounted(async () => {
     </draggable> -->
   </div>
 </template>
-<style scoped></style>
