@@ -1,9 +1,13 @@
 import { FastifyInstance } from "fastify";
 import {
+  addMember,
   createWorkspaceHandler,
   deleteWorkspaceHandler,
+  getMembers,
+  getNotInscribedUsers,
   getWorkspaceByIdHandler,
   getWorkspacesHandler,
+  removeMember,
   updateWorkspaceHandler,
 } from "./workspace.controller";
 import { $ref } from "./workspace.schema";
@@ -59,6 +63,48 @@ async function workspaceRoute(server: FastifyInstance) {
       preHandler: [authMiddleware],
     },
     getWorkspaceByIdHandler
+  );
+
+  // for member management
+  server.post(
+    "/addmember",
+    {
+      preHandler: [authMiddleware, managerMiddleware],
+      schema: {
+        body: $ref("addMemberSchema"),
+      },
+    },
+    addMember
+  );
+
+  server.delete(
+    "/removemember",
+    {
+      preHandler: [authMiddleware, managerMiddleware],
+    },
+    removeMember
+  );
+
+  server.get(
+    "/getmembers",
+    {
+      preHandler: [authMiddleware],
+      schema: {
+        querystring: $ref("getMembersSchema"),
+      },
+    },
+    getMembers
+  );
+
+  server.get(
+    "/getnotinscribedusers",
+    {
+      schema: {
+        querystring: $ref("getNotInscribedMembersSchema"),
+      },
+      preHandler: [authMiddleware, managerMiddleware],
+    },
+    getNotInscribedUsers
   );
 }
 

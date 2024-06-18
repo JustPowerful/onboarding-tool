@@ -1,8 +1,11 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
+  AddMemberInput,
   CreateWorkspaceInput,
   DeleteWorkspaceInput,
+  GetMembersInput,
   UpdateWorkspaceInput,
+  getNotInscribedMembersInput,
 } from "./workspace.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -136,8 +139,124 @@ export async function getWorkspaceByIdHandler(
   }
 }
 
-export async function addMember(request: FastifyRequest, reply: FastifyReply) {}
+// for member management
+export async function addMember(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { workspaceId, userId } = request.body as AddMemberInput;
+    await request.server.prisma.userInWorkspace.create({
+      data: {
+        userId: Number(userId),
+        workspaceId: Number(workspaceId),
+      },
+    });
+    return reply.code(201).send({ message: "Member added successfully" });
+  } catch (error) {
+    return reply.code(500).send({ message: "Internal Server Error" });
+  }
+}
 export async function removeMember(
   request: FastifyRequest,
   reply: FastifyReply
-) {}
+) {
+  try {
+    const { workspaceId, userId } = request.body as AddMemberInput;
+    await request.server.prisma.userInWorkspace.deleteMany({
+      where: {
+        workspaceId: Number(workspaceId),
+        userId: Number(userId),
+      },
+    });
+    return reply.code(200).send({ message: "Member removed successfully" });
+  } catch (error) {
+    return reply.code(500).send({ message: "Internal Server Error" });
+  }
+}
+export async function getMembers(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { workspaceId, page, search } = request.query as GetMembersInput;
+    var searchCondition = {};
+    if (search) {
+      searchCondition = {
+        OR: [
+          {
+            user: {
+              firstname: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            user: {
+              lastname: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      };
+    }
+    const members = await request.server.prisma.userInWorkspace.findMany({
+      where: {
+        workspaceId: Number(workspaceId),
+        ...searchCondition,
+      },
+      include: {
+        user: true,
+      },
+      skip: Number(page) * 10,
+      take: 10,
+    });
+    const totalPages = Math.ceil(members.length / 10);
+    const users = members.map((member) => member.user);
+    return reply.code(200).send({
+      message: "Members fetched successfully",
+      totalPages,
+      members: users,
+    });
+  } catch (error) {
+    return reply.code(500).send({ message: "Internal Server Error" });
+  }
+}
+export async function getNotInscribedUsers(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { workspaceId, page, search } =
+    request.body as getNotInscribedMembersInput;
+
+  var searchCondition = {};
+  if (search) {
+    searchCondition = {
+      OR: [
+        { firstname: { contains: search, mode: "insensitive" } },
+        { lastname: { contains: search, mode: "insensitive" } },
+      ],
+    };
+  }
+  try {
+    const users = await request.server.prisma.user.findMany({
+      where: {
+        ...searchCondition,
+        NOT: {
+          workspaces: {
+            some: {
+              workspaceId: Number(workspaceId),
+            },
+          },
+        },
+      },
+      skip: Number(page) * 10,
+      take: 10,
+    });
+    const totalPages = Math.ceil(users.length / 10);
+    return reply.code(200).send({
+      message: "Users fetched successfully",
+      users,
+      totalPages,
+    });
+  } catch (error) {
+    return reply.code(500).send({ message: "Internal Server Error" });
+  }
+}

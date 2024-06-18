@@ -188,7 +188,7 @@ onUnmounted(() => {
     </div>
     <!--end: interactive menus -->
     <div
-      class="relative bg-white border-2 min-w-[240px] min-h-[120px] h-fit p-2 border-zinc-200 rounded-md flex flex-col gap-3"
+      class="relative bg-white border-2 min-w-[240px] max-w-[240px] min-h-[120px] h-fit p-2 border-zinc-200 rounded-md flex flex-col gap-3"
     >
       <div class="flex justify-between items-center">
         <div>

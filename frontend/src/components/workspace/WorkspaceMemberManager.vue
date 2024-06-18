@@ -15,7 +15,7 @@ async function fetchMembers() {
   try {
     loadingMembers.value = true;
     const { data } = await AxiosPrivate.get(
-      `/member/getall?search=${search.value}&page=${page.value}&role=EMPLOYEE`
+      `/workspace/getnotinscribedusers?search=${search.value}&page=${page.value}&role=EMPLOYEE`
     );
     members.value = data.members;
   } catch (error) {
