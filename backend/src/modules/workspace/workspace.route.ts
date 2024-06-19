@@ -81,6 +81,9 @@ async function workspaceRoute(server: FastifyInstance) {
     "/removemember",
     {
       preHandler: [authMiddleware, managerMiddleware],
+      schema: {
+        body: $ref("removeMemberSchema"),
+      },
     },
     removeMember
   );
@@ -102,7 +105,7 @@ async function workspaceRoute(server: FastifyInstance) {
       schema: {
         querystring: $ref("getNotInscribedMembersSchema"),
       },
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware],
     },
     getNotInscribedUsers
   );
