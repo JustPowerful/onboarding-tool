@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import {
   createChecklist,
   deleteChecklist,
@@ -8,7 +8,7 @@ import {
 } from "./checklist.controller";
 import { $ref } from "./checklist.schema";
 import { authMiddleware } from "../../middlewares/auth.middleware";
-import { managerMiddleware } from "../../middlewares/manager.middleware";
+import roleMiddleware from "../../middlewares/role.middleware";
 
 async function checklistRoute(server: FastifyInstance) {
   server.post(
@@ -17,7 +17,7 @@ async function checklistRoute(server: FastifyInstance) {
       schema: {
         body: $ref("createChecklistSchema"),
       },
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
     },
     createChecklist
   );
@@ -27,7 +27,7 @@ async function checklistRoute(server: FastifyInstance) {
       schema: {
         params: $ref("deleteChecklistSchema"),
       },
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
     },
     deleteChecklist
   );
@@ -44,14 +44,14 @@ async function checklistRoute(server: FastifyInstance) {
       schema: {
         body: $ref("updateChecklistSchema"),
       },
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
     },
     updateChecklist
   );
   server.patch(
     "/updateorder",
     {
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
     },
     updateChecklistOrder
   );
