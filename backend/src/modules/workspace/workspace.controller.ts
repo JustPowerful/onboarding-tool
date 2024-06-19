@@ -9,6 +9,8 @@ import {
 } from "./workspace.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
+const NUMBER_OF_USERS_PER_PAGE = 5;
+
 export async function createWorkspaceHandler(
   request: FastifyRequest,
   reply: FastifyReply
@@ -90,6 +92,11 @@ export async function getWorkspacesHandler(
         id: Number(currentUser.sub),
       },
     });
+
+    if (!user) {
+      return reply.code(404).send({ message: "User not found" });
+    }
+
     if (user?.role === "MANAGER") {
       const workspaces = await request.server.prisma.workspace.findMany();
       return reply.code(200).send({
@@ -98,15 +105,19 @@ export async function getWorkspacesHandler(
       });
     }
 
-    const workspaces = await request.server.prisma.workspace.findMany({
-      where: {
-        users: {
-          some: {
-            id: user?.id,
-          },
+    const joinedWorkspaceList =
+      await request.server.prisma.userInWorkspace.findMany({
+        where: {
+          userId: Number(user.id),
         },
-      },
-    });
+        include: {
+          workspace: true,
+        },
+      });
+
+    const workspaces = joinedWorkspaceList.map(
+      (joinedWorkspace) => joinedWorkspace.workspace
+    );
     return reply.code(200).send({
       message: "Your workspaces are listed successfully",
       workspaces,
@@ -205,15 +216,23 @@ export async function getMembers(request: FastifyRequest, reply: FastifyReply) {
       include: {
         user: true,
       },
-      skip: Number(page) * 10,
-      take: 10,
+      skip: Number(page) * NUMBER_OF_USERS_PER_PAGE,
+      take: NUMBER_OF_USERS_PER_PAGE,
     });
-    const totalPages = Math.ceil(members.length / 10);
+    const totalUsers = await request.server.prisma.userInWorkspace.count({
+      where: {
+        workspaceId: Number(workspaceId),
+        ...searchCondition,
+      },
+    });
+    const totalPages = Math.ceil(totalUsers / 10);
     const users = members.map((member) => member.user);
     return reply.code(200).send({
       message: "Members fetched successfully",
+      users,
       totalPages,
-      members: users,
+      totalUsers,
+      rowsPerPage: NUMBER_OF_USERS_PER_PAGE,
     });
   } catch (error) {
     return reply.code(500).send({ message: "Internal Server Error" });
@@ -224,7 +243,7 @@ export async function getNotInscribedUsers(
   reply: FastifyReply
 ) {
   const { workspaceId, page, search } =
-    request.body as getNotInscribedMembersInput;
+    request.query as getNotInscribedMembersInput;
 
   var searchCondition = {};
   if (search) {
@@ -239,6 +258,7 @@ export async function getNotInscribedUsers(
     const users = await request.server.prisma.user.findMany({
       where: {
         ...searchCondition,
+        role: "EMPLOYEE",
         NOT: {
           workspaces: {
             some: {
@@ -247,14 +267,29 @@ export async function getNotInscribedUsers(
           },
         },
       },
-      skip: Number(page) * 10,
-      take: 10,
+      skip: (Number(page) - 1) * NUMBER_OF_USERS_PER_PAGE,
+      take: NUMBER_OF_USERS_PER_PAGE,
     });
-    const totalPages = Math.ceil(users.length / 10);
+    const totalUsers = await request.server.prisma.user.count({
+      where: {
+        ...searchCondition,
+        role: "EMPLOYEE",
+        NOT: {
+          workspaces: {
+            some: {
+              workspaceId: Number(workspaceId),
+            },
+          },
+        },
+      },
+    });
+    const totalPages = Math.ceil(totalUsers / 10);
     return reply.code(200).send({
       message: "Users fetched successfully",
       users,
       totalPages,
+      totalUsers,
+      rowsPerPage: NUMBER_OF_USERS_PER_PAGE,
     });
   } catch (error) {
     return reply.code(500).send({ message: "Internal Server Error" });
