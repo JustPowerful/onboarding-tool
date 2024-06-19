@@ -18,6 +18,11 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 
+function logOut() {
+  window.localStorage.removeItem("token");
+  window.location.href = "/login";
+}
+
 function handleClickOutside(event: MouseEvent) {
   if (toggle.value) {
     if (
@@ -72,7 +77,10 @@ function handleClickOutside(event: MouseEvent) {
       <div class="flex flex-col gap-1 pt-2">
         <hr />
         <small class="text-red-500">Account</small>
-        <button class="hover:bg-red-500 hover:text-white p-1 rounded-sm">
+        <button
+          @click="logOut"
+          class="hover:bg-red-500 hover:text-white p-1 rounded-sm"
+        >
           Logout
         </button>
       </div>
