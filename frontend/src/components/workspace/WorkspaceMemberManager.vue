@@ -62,7 +62,9 @@ async function fetchInscribed() {
   try {
     loadingMembers.value = true;
     const { data } = await AxiosPrivate.get(
-      `/workspace/getmembers?search=${search.value}&page=${page.value}&workspaceId=${props.workspaceId}&role=EMPLOYEE`
+      `/workspace/getmembers?search=${search.value}&page=${Math.floor(
+        page.value / rows.value
+      )}&workspaceId=${props.workspaceId}&role=EMPLOYEE`
     );
     members.value = data.users;
     totalUsers.value = data.totalUsers;
