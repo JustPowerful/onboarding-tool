@@ -55,7 +55,10 @@ async function removeUser() {
           {{ member.lastname[0].toUpperCase() }}
         </div>
       </div>
-      <div>{{ member.firstname }} {{ member.lastname }}</div>
+      <div>
+        <div>{{ member.firstname }} {{ member.lastname }}</div>
+        <div class="text-xs text-zinc-500">{{ member.email }}</div>
+      </div>
     </div>
     <div>
       <button
