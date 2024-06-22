@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import { AxiosPrivate } from "@/api";
-import type { TaskData } from "@/types";
+import type { TaskData, UserData } from "@/types";
 import {
   CheckCheck,
   Ellipsis,
   LayoutList,
+  PlusIcon,
   Save,
   Trash,
   Users,
   X,
 } from "lucide-vue-next";
-import { defineProps, ref } from "vue";
+import { defineProps, ref, watch } from "vue";
+
 import BaseInput from "../form/BaseInput.vue";
+import AssignmentManager from "./AssignmentManager.vue";
 
 const props = defineProps<{
   task: TaskData;
+  workspaceId: number;
   fetchChecklists: () => Promise<void>;
   disableDragging: () => void;
   enableDragging: () => void;
@@ -37,6 +41,16 @@ async function deleteTask() {
     deleteLoading.value = false;
   }
 }
+
+watch(
+  () => toggleTaskMenu.value,
+  () => {
+    if (toggleTaskMenu.value) {
+      fetchAssignedMembers();
+    }
+  }
+);
+
 const updateLoading = ref(false);
 async function updateTask() {
   try {
@@ -53,6 +67,18 @@ async function updateTask() {
   } finally {
     updateLoading.value = false;
   }
+}
+
+const members = ref<UserData[]>([]);
+// this will only fetch the first page of unassigned members to showcase it in the UI
+// then the user can press the ... elipsis to fetch more members
+async function fetchAssignedMembers() {
+  try {
+    const { data } = await AxiosPrivate.get(
+      `/task/getassignements?search=&page=0&workspaceId=${props.workspaceId}&taskId=${props.task.id}`
+    );
+    members.value = data.members;
+  } catch (error) {}
 }
 </script>
 <template>
@@ -84,20 +110,19 @@ async function updateTask() {
               <small class="text-red-400">Members</small>
               <div class="flex">
                 <div
-                  class="-mr-4 relative group w-10 h-10 text-white bg-red-500 border-2 border-white rounded-full flex justify-center items-center hover:scale-110 transition-all"
+                  v-for="member in members"
+                  class="cursor-pointer select-none -mr-4 relative group w-10 h-10 text-white bg-red-500 border-2 border-white rounded-full flex justify-center items-center hover:scale-110 transition-all"
                 >
-                  AM
+                  {{ member.firstname[0] }}{{ member.lastname[0] }}
                 </div>
-                <div
-                  class="-mr-4 relative group w-10 h-10 text-white bg-red-500 border-2 border-white rounded-full flex justify-center items-center hover:scale-110 transition-all"
+                <AssignmentManager
+                  class="-mr-4 relative group w-10 h-10 text-white bg-zinc-500 flex justify-center items-center rounded-full hover:scale-110 transition-all border-2 border-white"
+                  :button-children="PlusIcon"
+                  :workspace-id="workspaceId"
+                  :task-id="task.id"
                 >
-                  AM
-                </div>
-                <div
-                  class="-mr-4 relative group w-10 h-10 text-white bg-red-500 border-2 border-white rounded-full flex justify-center items-center hover:scale-110 transition-all"
-                >
-                  AM
-                </div>
+                  <Ellipsis :size="24" />
+                </AssignmentManager>
               </div>
             </div>
 
@@ -138,12 +163,15 @@ async function updateTask() {
           <div class="pt-5 flex flex-col justify-between">
             <div class="flex flex-col gap-2">
               <small class="text-red-400">Manage your task card</small>
-              <button
+              <AssignmentManager
                 class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
+                :button-children="PlusIcon"
+                :workspace-id="workspaceId"
+                :task-id="task.id"
               >
                 <Users :size="18" />
                 Assigned members
-              </button>
+              </AssignmentManager>
               <button
                 class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
               >

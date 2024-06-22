@@ -243,6 +243,7 @@ onUnmounted(() => {
       >
         <template #item="{ element: task }">
           <Task
+            :workspace-id="props.checklist.workspaceId"
             :fetch-checklists="fetchChecklists"
             :enable-dragging="
               () => {
