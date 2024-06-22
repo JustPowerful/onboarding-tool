@@ -1,10 +1,16 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import {
+  AssignMemberInput,
   CreateTaskInput,
   DeleteTaskInput,
+  GetAssignementsInput,
+  GetUnassignedMembersInput,
+  RemoveAssignementInput,
   UpdateTaskInput,
 } from "./task.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+const NUMBER_OF_USERS_PER_PAGE = 5;
 
 export async function createTask(request: FastifyRequest, reply: FastifyReply) {
   const { name, checklistId } = request.body as CreateTaskInput;
@@ -79,6 +85,210 @@ export async function updateTask(request: FastifyRequest, reply: FastifyReply) {
   } catch (error) {
     return reply.code(500).send({
       message: "Failed to update task",
+    });
+  }
+}
+
+// assignements
+export async function assignMember(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { userId, taskId } = request.body as AssignMemberInput;
+  try {
+    await request.server.prisma.assignment.create({
+      data: {
+        userId,
+        taskId,
+      },
+    });
+    reply.code(201).send({
+      message: "Member assigned successfully",
+    });
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      // if task or user is not found
+      if (error.code === "P2025") {
+        return reply.code(404).send({
+          message: "Records not found, please check your input",
+        });
+      }
+    }
+  }
+}
+export async function removeAssignement(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { userId, taskId } = request.body as RemoveAssignementInput;
+  try {
+    await request.server.prisma.assignment.deleteMany({
+      where: {
+        userId: Number(userId),
+        taskId: Number(taskId),
+      },
+    });
+    reply.code(200).send({
+      message: "Member assignement removed successfully",
+    });
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      // if task or user is not found
+      if (error.code === "P2025") {
+        return reply.code(404).send({
+          message: "Records not found, please check your input",
+        });
+      }
+    }
+  }
+}
+
+export async function getUnassignedMembers(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { workspaceId, taskId, page, search } =
+    request.query as GetUnassignedMembersInput;
+
+  let searchCondition = {};
+  if (search) {
+    searchCondition = {
+      OR: [
+        {
+          firstName: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          lastName: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    };
+  }
+
+  try {
+    const unassignedMembers = await request.server.prisma.user.findMany({
+      where: {
+        ...searchCondition,
+        workspaces: {
+          some: {
+            workspaceId: Number(workspaceId),
+          },
+        },
+        assignments: {
+          none: {
+            taskId: Number(taskId),
+          },
+        },
+      },
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+        email: true,
+      },
+      skip: NUMBER_OF_USERS_PER_PAGE * page,
+      take: NUMBER_OF_USERS_PER_PAGE,
+    });
+    const totalUnassignedMembers = await request.server.prisma.user.count({
+      where: {
+        ...searchCondition,
+        workspaces: {
+          some: {
+            workspaceId: Number(workspaceId),
+          },
+        },
+        assignments: {
+          none: {
+            taskId: Number(taskId),
+          },
+        },
+      },
+    });
+    return reply.status(201).send({
+      message: "successfully fetched the unassigned members",
+      members: unassignedMembers,
+      totalUsers: totalUnassignedMembers,
+      totalPages: Math.ceil(totalUnassignedMembers / 10),
+      rowsPerPage: NUMBER_OF_USERS_PER_PAGE,
+    });
+  } catch (error) {
+    console.log(error);
+    return reply.status(500).send({
+      message: "Failed to fetch unassigned members",
+    });
+  }
+}
+
+export async function getAssignements(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { taskId, search, page } = request.query as GetAssignementsInput;
+  let searchCondition = {};
+  if (search) {
+    searchCondition = {
+      user: {
+        OR: [
+          {
+            firstName: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            lastName: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    };
+  }
+
+  try {
+    const assignments = await request.server.prisma.assignment.findMany({
+      where: {
+        ...searchCondition,
+        taskId: Number(taskId),
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            email: true,
+          },
+        },
+      },
+      skip: NUMBER_OF_USERS_PER_PAGE * page,
+      take: NUMBER_OF_USERS_PER_PAGE,
+    });
+    const totalAssignments = await request.server.prisma.user.count({
+      where: {
+        assignments: {
+          some: {
+            taskId: Number(taskId),
+          },
+        },
+      },
+    });
+    const members = assignments.map((assignment) => assignment.user);
+    return reply.status(201).send({
+      message: "successfully fetched the assignments",
+      members,
+      totalUsers: totalAssignments,
+      rowsPerPage: NUMBER_OF_USERS_PER_PAGE,
+    });
+  } catch (error) {
+    return reply.status(500).send({
+      message: "Failed to fetch assignments",
     });
   }
 }
