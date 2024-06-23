@@ -18,6 +18,8 @@ import { workspaceSchemas } from "./modules/workspace/workspace.schema";
 import { checklistSchemas } from "./modules/checklist/checklist.schema";
 import { taskSchemas } from "./modules/task/task.schema";
 import { memberSchemas } from "./modules/member/member.schema";
+import { proposalSchemas } from "./modules/proposal/proposal.schema";
+import proposalRoute from "./modules/proposal/proposal.route";
 
 const server = Fastify();
 
@@ -28,6 +30,7 @@ for (const schema of [
   ...checklistSchemas,
   ...taskSchemas,
   ...memberSchemas,
+  ...proposalSchemas,
 ]) {
   server.addSchema(schema);
 }
@@ -41,6 +44,7 @@ server.register(workspaceRoute, { prefix: "/api/workspace" });
 server.register(checklistRoute, { prefix: "/api/checklist" });
 server.register(taskRoute, { prefix: "/api/task" });
 server.register(memberRoute, { prefix: "/api/member" });
+server.register(proposalRoute, { prefix: "/api/proposal" });
 
 const PORT = 3000;
 server.listen({ port: PORT }, (err, address) => {
