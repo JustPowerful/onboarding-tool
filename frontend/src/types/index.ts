@@ -23,6 +23,13 @@ export interface TaskData {
   name: string;
   description?: string;
   checklistId: number;
+  assignements?: Assignment[];
+}
+
+export interface Assignment {
+  id: number;
+  taskId: number;
+  userId: number;
 }
 
 export type WorkspaceTab = "BOARD" | "CLIENTS" | "SETTINGS";
