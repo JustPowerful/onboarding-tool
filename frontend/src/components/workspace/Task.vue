@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-vue-next";
 import { defineProps, ref, watch } from "vue";
+import Editor from "primevue/editor";
 
 import BaseInput from "../form/BaseInput.vue";
 import AssignmentManager from "./AssignmentManager.vue";
@@ -28,6 +29,21 @@ const toggleTaskMenu = ref(false);
 
 const name = ref(props.task.name);
 const description = ref(props.task.description);
+const editorRef = ref(null);
+
+watch(editorRef, (editor: any) => {
+  if (!editor) return;
+  editor.renderValue = function renderValue(this: any, value: any) {
+    if (this.quill) {
+      if (description.value) {
+        const delta = this.quill.clipboard.convert({ html: description.value });
+        this.quill.setContents(delta, "silent");
+      } else {
+        this.quill.setText("");
+      }
+    }
+  }.bind(editor);
+});
 
 const deleteLoading = ref(false);
 async function deleteTask() {
@@ -70,6 +86,7 @@ async function updateTask() {
 }
 
 const members = ref<UserData[]>([]);
+const totalAssignedUsers = ref(0);
 // this will only fetch the first page of unassigned members to showcase it in the UI
 // then the user can press the ... elipsis to fetch more members
 async function fetchAssignedMembers() {
@@ -78,6 +95,7 @@ async function fetchAssignedMembers() {
       `/task/getassignements?search=&page=0&workspaceId=${props.workspaceId}&taskId=${props.task.id}`
     );
     members.value = data.members;
+    totalAssignedUsers.value = data.totalUsers;
   } catch (error) {}
 }
 </script>
@@ -107,7 +125,12 @@ async function fetchAssignedMembers() {
               <span>{{ task.name }}</span>
             </div>
             <div>
-              <small class="text-red-400">Members</small>
+              <small class="text-red-400"
+                >Members
+                <span v-if="totalAssignedUsers > 0"
+                  >({{ totalAssignedUsers }})</span
+                >
+              </small>
               <div class="flex">
                 <div
                   v-for="member in members"
@@ -116,11 +139,19 @@ async function fetchAssignedMembers() {
                   {{ member.firstname[0] }}{{ member.lastname[0] }}
                 </div>
                 <AssignmentManager
+                  :fetch-checklists="fetchChecklists"
+                  :refresh-member-preview="fetchAssignedMembers"
                   class="-mr-4 relative group w-10 h-10 text-white bg-zinc-500 flex justify-center items-center rounded-full hover:scale-110 transition-all border-2 border-white"
                   :button-children="PlusIcon"
                   :workspace-id="workspaceId"
                   :task-id="task.id"
                 >
+                  <div
+                    v-if="totalAssignedUsers > 0"
+                    class="absolute text-xs -top-1 -right-1 text-white bg-red-500 rounded-full shadow-md shadow-zinc-400 w-4 h-4 group-hover:block transition-all"
+                  >
+                    {{ totalAssignedUsers }}
+                  </div>
                   <Ellipsis :size="24" />
                 </AssignmentManager>
               </div>
@@ -134,11 +165,18 @@ async function fetchAssignedMembers() {
               />
               <div class="flex flex-col gap-1">
                 <label class="font-semibold">Description</label>
-                <textarea
+                <!-- <textarea
                   v-model="description"
                   placeholder="Give the task a description..."
                   class="w-full p-2 border border-zinc-400 rounded-md focus:outline-red-400"
-                ></textarea>
+                ></textarea> -->
+
+                <Editor
+                  ref="editorRef"
+                  placeholder="Give the task a description..."
+                  v-model="description"
+                  editorStyle="height: 320px"
+                />
               </div>
               <button
                 @click="updateTask"
@@ -164,6 +202,8 @@ async function fetchAssignedMembers() {
             <div class="flex flex-col gap-2">
               <small class="text-red-400">Manage your task card</small>
               <AssignmentManager
+                :fetch-checklists="fetchChecklists"
+                :refresh-member-preview="fetchAssignedMembers"
                 class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
                 :button-children="PlusIcon"
                 :workspace-id="workspaceId"
@@ -209,11 +249,21 @@ async function fetchAssignedMembers() {
         toggleTaskMenu = true;
         disableDragging();
       "
-      class="bg-white p-2 border-2 border-zinc-200 rounded-md flex justify-between"
+      class="bg-white p-2 border-2 border-zinc-200 rounded-md"
     >
-      <div>{{ props.task.name }}</div>
+      <div class="flex justify-between">
+        <div>{{ props.task.name }}</div>
+        <div class="text-zinc-500">
+          <Ellipsis :size="21" />
+        </div>
+      </div>
       <div class="text-zinc-500">
-        <Ellipsis :size="21" />
+        <div
+          v-if="task.assignements && task.assignements.length > 0"
+          class="flex items-center gap-1"
+        >
+          <Users :size="15" /> {{ task.assignements?.length }}
+        </div>
       </div>
     </div>
   </div>
