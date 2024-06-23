@@ -9,6 +9,8 @@ import Paginator from "primevue/paginator";
 const props = defineProps<{
   workspaceId: number;
   taskId: number;
+  fetchChecklists: () => Promise<void>;
+  refreshMemberPreview: () => void;
 }>();
 
 const toggle = ref(false);
@@ -20,6 +22,7 @@ const totalUsers = ref(1);
 
 async function fetchUnassigned() {
   try {
+    props.refreshMemberPreview();
     const { data } = await AxiosPrivate.get(
       `/task/getunassignedmembers?search=${search.value}&page=${Math.floor(
         first.value / rows.value
@@ -33,6 +36,7 @@ async function fetchUnassigned() {
 
 async function fetchAssignedMembers() {
   try {
+    props.refreshMemberPreview();
     const { data } = await AxiosPrivate.get(
       `/task/getassignements?search=${search.value}&page=${Math.floor(
         first.value / rows.value
@@ -47,6 +51,9 @@ async function fetchAssignedMembers() {
 watch(
   () => toggle.value,
   () => {
+    if (toggle.value === true) {
+      tab.value = 0;
+    }
     fetchUnassigned();
   }
 );
@@ -117,6 +124,7 @@ watch(
         <!-- All users -->
         <div v-for="member in members">
           <AssignementCard
+            :fetch-checklists="fetchChecklists"
             :task-id="taskId"
             :fetch-unassigned="fetchUnassigned"
             :fetch-assigned-members="fetchAssignedMembers"
@@ -129,6 +137,7 @@ watch(
         <!-- Assigned Members -->
         <div v-for="member in members">
           <AssignementCard
+            :fetch-checklists="fetchChecklists"
             :task-id="taskId"
             :fetch-unassigned="fetchUnassigned"
             :fetch-assigned-members="fetchAssignedMembers"

@@ -9,6 +9,7 @@ const props = defineProps<{
   isAssigned: boolean;
   fetchUnassigned: () => void;
   fetchAssignedMembers: () => void;
+  fetchChecklists: () => Promise<void>;
 }>();
 
 async function assignMember() {
@@ -18,6 +19,7 @@ async function assignMember() {
       userId: props.member.id,
     });
     props.fetchUnassigned();
+    props.fetchChecklists();
   } catch (error) {}
 }
 
@@ -30,6 +32,7 @@ async function removeMember() {
       },
     });
     props.fetchAssignedMembers();
+    props.fetchChecklists();
   } catch (error) {}
 }
 </script>
