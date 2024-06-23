@@ -28,11 +28,12 @@ model User {
   password String
   workspaces UserInWorkspace[]
   assignments Assignment[]
+  proposals Proposal[]
 }
 
 model UserInWorkspace {
   id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId Int
@@ -77,9 +78,9 @@ model Task {
 model Assignment {
   id Int @id @default(autoincrement())
   taskId Int
-  task Task @relation(fields: [taskId], references: [id])
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   userId Int
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // task solution proposals from employees
@@ -88,9 +89,11 @@ model Proposal {
   name String
   description String
   stack String? // tech stack user (optional)
-  status PROPOSAL_STATUS
+  status PROPOSAL_STATUS @default(PENDING)
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   taskId Int
-  task Task @relation(fields: [taskId], references: [id])
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
 
 enum PROPOSAL_STATUS {
