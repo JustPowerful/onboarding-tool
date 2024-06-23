@@ -13,6 +13,7 @@ import {
 } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import SettingsTab from "@/components/workspace/tabs/SettingsTab.vue";
 const route = useRoute();
 
 const workspaceId = Number(route.params.id);
@@ -86,6 +87,12 @@ onMounted(async () => {
       <div class="relative">
         <div v-if="tab === 'BOARD'">
           <BoardTab v-if="workspace" :workspaceId="workspaceId" />
+        </div>
+        <div v-if="tab === 'SETTINGS'">
+          <SettingsTab
+            :workspace-id="workspaceId"
+            :refresh-workspace="getWorkspace"
+          />
         </div>
       </div>
     </div>
