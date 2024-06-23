@@ -177,6 +177,20 @@ export async function removeMember(
         userId: Number(userId),
       },
     });
+    // we also need to remove the user from all the tasks in the workspace
+    // to do that we remove the assignements of the user in the workspace
+    await request.server.prisma.assignment.deleteMany({
+      where: {
+        userId: Number(userId),
+        task: {
+          checklist: {
+            workspaceId: {
+              equals: Number(workspaceId),
+            },
+          },
+        },
+      },
+    });
     return reply.code(200).send({ message: "Member removed successfully" });
   } catch (error) {
     return reply.code(500).send({ message: "Internal Server Error" });
