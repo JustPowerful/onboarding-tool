@@ -33,4 +33,21 @@ export interface Assignment {
   userId: number;
 }
 
+export interface Proposal {
+  id: number;
+  name: string;
+  description: string;
+  stack?: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  userId: number;
+  taskId: number;
+  user: {
+    id: number;
+    email: string;
+    firstname: string;
+    lastname: string;
+    role: "MANAGER" | "EMPLOYEE" | "CLIENT";
+  };
+}
+
 export type WorkspaceTab = "BOARD" | "CLIENTS" | "SETTINGS";
