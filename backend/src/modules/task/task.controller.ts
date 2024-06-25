@@ -4,6 +4,7 @@ import {
   CreateTaskInput,
   DeleteTaskInput,
   GetAssignementsInput,
+  GetTaskByIdInput,
   GetUnassignedMembersInput,
   RemoveAssignementInput,
   UpdateTaskInput,
@@ -289,6 +290,32 @@ export async function getAssignements(
   } catch (error) {
     return reply.status(500).send({
       message: "Failed to fetch assignments",
+    });
+  }
+}
+
+export async function getTaskById(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { id } = request.params as GetTaskByIdInput;
+  try {
+    const task = await request.server.prisma.task.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!task) {
+      return reply.status(404).send({
+        message: "Task not found",
+      });
+    }
+    return reply.status(200).send({
+      message: "Task fetched successfully",
+      task,
+    });
+  } catch (error) {
+    return reply.status(500).send({
+      message: "Failed to fetch task",
     });
   }
 }

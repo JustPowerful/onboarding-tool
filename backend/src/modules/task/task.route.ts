@@ -4,6 +4,7 @@ import {
   createTask,
   deleteTask,
   getAssignements,
+  getTaskById,
   getUnassignedMembers,
   removeAssignement,
   updateTask,
@@ -84,6 +85,16 @@ async function taskRoute(server: FastifyInstance) {
       },
     },
     getUnassignedMembers
+  );
+  server.get(
+    "/gettaskbyid/:id",
+    {
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      schema: {
+        params: $ref("getTaskByIdSchema"),
+      },
+    },
+    getTaskById
   );
 }
 

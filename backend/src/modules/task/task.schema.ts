@@ -73,6 +73,13 @@ const getAssignementsSchema = z.object({
   page: z.number({}),
 });
 
+const getTaskByIdSchema = z.object({
+  id: z.number({
+    invalid_type_error: "Task id must be a number",
+    required_error: "Task id is required",
+  }),
+});
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
@@ -82,6 +89,7 @@ export type GetAssignementsInput = z.infer<typeof getAssignementsSchema>;
 export type GetUnassignedMembersInput = z.infer<
   typeof getUnassignedMembersSchema
 >;
+export type GetTaskByIdInput = z.infer<typeof getTaskByIdSchema>;
 export const { schemas: taskSchemas, $ref } = buildJsonSchemas(
   {
     createTaskSchema,
@@ -91,6 +99,7 @@ export const { schemas: taskSchemas, $ref } = buildJsonSchemas(
     removeAssignementSchema,
     getAssignementsSchema,
     getUnassignedMembersSchema,
+    getTaskByIdSchema,
   },
   {
     $id: "task",
