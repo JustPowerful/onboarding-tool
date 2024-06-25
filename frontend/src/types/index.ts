@@ -3,7 +3,8 @@ export interface UserData {
   firstname: string;
   lastname: string;
   email: string;
-  password: string;
+  password?: string;
+  role: "MANAGER" | "EMPLOYEE" | "CLIENT";
 }
 
 export interface WorkspaceData {
