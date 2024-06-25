@@ -24,10 +24,6 @@ const createProposalSchema = z.object({
     invalid_type_error: "TaskId must be a number",
     required_error: "TaskId is required",
   }),
-  userId: z.number({
-    invalid_type_error: "UserId must be a number",
-    required_error: "UserId is required",
-  }),
 });
 
 const updateProposalSchema = z.object({
