@@ -2,7 +2,6 @@
 import { AxiosPrivate } from "@/api";
 import type { TaskData, UserData } from "@/types";
 import {
-  CheckCheck,
   Ellipsis,
   LayoutList,
   PlusIcon,
@@ -16,6 +15,7 @@ import Editor from "primevue/editor";
 
 import BaseInput from "../form/BaseInput.vue";
 import AssignmentManager from "./AssignmentManager.vue";
+import ProposalManager from "./proposals/ProposalManager.vue";
 
 const props = defineProps<{
   task: TaskData;
@@ -212,12 +212,7 @@ async function fetchAssignedMembers() {
                 <Users :size="18" />
                 Assigned members
               </AssignmentManager>
-              <button
-                class="bg-zinc-300 hover:bg-zinc-400 w-full p-1 rounded-md text-slate-700 flex items-center justify-center gap-1"
-              >
-                <CheckCheck :size="18" />
-                Proposed Solutions
-              </button>
+              <ProposalManager :task="task" />
             </div>
             <div>
               <button
