@@ -4,3 +4,23 @@
   font-family: "Poppins", sans-serif;
   @apply box-border;
 }
+
+/* width */
+::-webkit-scrollbar {
+  @apply w-[10px] h-2;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-gray-200 rounded-md;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-red-500 rounded-md;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-red-400;
+}
