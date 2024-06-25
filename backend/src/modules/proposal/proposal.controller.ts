@@ -70,8 +70,6 @@ export async function updateProposal(
   }
 }
 
-const PROPOSAL_PER_PAGE = 5;
-
 export async function deleteProposal(
   request: FastifyRequest,
   reply: FastifyReply
@@ -92,6 +90,7 @@ export async function deleteProposal(
     });
   }
 }
+const PROPOSAL_PER_PAGE = 5;
 
 export async function paginateProposal(
   request: FastifyRequest,
@@ -109,6 +108,17 @@ export async function paginateProposal(
       where: {
         taskId: Number(taskId),
         ...statusCondition,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstname: true,
+            lastname: true,
+            role: true,
+          },
+        },
       },
       take: PROPOSAL_PER_PAGE,
       skip: page * PROPOSAL_PER_PAGE,
