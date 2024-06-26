@@ -3,13 +3,15 @@
 import { AxiosPrivate } from "@/api";
 import BaseInput from "@/components/form/BaseInput.vue";
 import ProposalCard from "@/components/proposal/ProposalCard.vue";
-import type { Proposal, TaskData, UserData } from "@/types";
-import { X } from "lucide-vue-next";
+import type { Proposal, TaskData, UserData, WorkspaceData } from "@/types";
+import { ChevronRight, Table2, X } from "lucide-vue-next";
 import Editor from "primevue/editor";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import ProposalModal from "./ProposalModal.vue";
+import Paginator from "primevue/paginator";
 const params = useRoute().params;
+const workspace = ref<WorkspaceData | null>(null);
 const taskId = params.id;
 const task = ref<TaskData | null>(null);
 const proposals = ref<Proposal[]>([]);
@@ -22,6 +24,11 @@ const stack = ref("");
 async function fetchTask() {
   try {
     const { data } = await AxiosPrivate.get(`/task/gettaskbyid/${taskId}`);
+    console.log(data);
+    const { data: workspaceData } = await AxiosPrivate.get(
+      "/workspace/get/" + data.task.checklist.workspaceId
+    );
+    workspace.value = workspaceData.workspace;
     // set the task data
     task.value = data.task;
   } catch (error) {
@@ -29,17 +36,31 @@ async function fetchTask() {
   }
 }
 
+const first = ref(0);
+const rowsPerPage = ref(5);
+const totalRecords = ref(0);
 async function fetchProposals() {
   try {
     const { data } = await AxiosPrivate.get(
-      `/proposal/paginate?taskId=${taskId}&page=0`
+      `/proposal/paginate?taskId=${taskId}&page=${Math.floor(
+        first.value / rowsPerPage.value
+      )}`
     );
     // set the proposals data
     proposals.value = data.proposals;
+    totalRecords.value = data.totalProposals;
+    rowsPerPage.value = data.rowsPerPage;
   } catch (error) {
     throw error;
   }
 }
+
+watch(
+  () => first.value,
+  () => {
+    fetchProposals();
+  }
+);
 
 const user = ref<UserData | null>(null);
 async function fetchCurrentUser() {
@@ -120,9 +141,31 @@ onMounted(() => {
   <!-- the page -->
 
   <div class="p-4">
-    <div v-if="task">
-      <div class="font-bold text-2xl">Task:</div>
-      <div class="text-lg">{{ task.name }}</div>
+    <div class="text-2xl flex items-center gap-2">
+      <div class="border-2 border-zinc-300 p-2 rounded-md">
+        <Table2 :size="24" />
+      </div>
+      <div class="flex items-center" v-if="workspace">
+        <div>
+          <RouterLink
+            class="text-zinc-800 block font-semibold hover:text-red-500"
+            to="/workspaces"
+            >Workspaces</RouterLink
+          >
+        </div>
+        <ChevronRight :size="26" />
+        <div>
+          <RouterLink
+            class="text-zinc-800 block font-semibold hover:text-red-500"
+            :to="`/workspace/${workspace.id}`"
+            >{{ workspace.name }}</RouterLink
+          >
+        </div>
+        <ChevronRight :size="26" />
+        <div>
+          {{ task.name }}
+        </div>
+      </div>
     </div>
     <div class="flex justify-end my-2">
       <!-- create modal  button place -->
@@ -149,4 +192,9 @@ onMounted(() => {
       />
     </div>
   </div>
+  <Paginator
+    v-model:first="first"
+    :totalRecords="totalRecords"
+    :rows="rowsPerPage"
+  />
 </template>
