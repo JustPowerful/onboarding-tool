@@ -80,7 +80,7 @@ async function saveData() {
 <template>
   <div
     v-if="toggleEdit"
-    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 flex items-center justify-center"
+    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center"
   >
     <div class="w-[300px] bg-white p-4 rounded-md relative">
       <button class="absolute top-2 right-2 text-red-500">
