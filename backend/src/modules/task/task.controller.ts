@@ -302,6 +302,9 @@ export async function getTaskById(
   try {
     const task = await request.server.prisma.task.findUnique({
       where: { id: Number(id) },
+      include: {
+        checklist: true,
+      },
     });
 
     if (!task) {
