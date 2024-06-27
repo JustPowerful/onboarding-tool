@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { GetAllMembersInput } from "./member.schema";
 
+const MEMBER_PER_PAGE = 5;
 export async function getAllMembers(
   request: FastifyRequest,
   reply: FastifyReply
@@ -11,8 +12,8 @@ export async function getAllMembers(
   if (search) {
     search_condition = {
       OR: [
-        { firstname: { contains: search } },
-        { lastname: { contains: search } },
+        { firstname: { contains: search, mode: "insensitive" } },
+        { lastname: { contains: search, mode: "insensitive" } },
       ],
     };
   }
@@ -26,13 +27,29 @@ export async function getAllMembers(
       where: {
         ...search_condition,
         ...role_condition,
+        role: {
+          not: "SUPERADMIN",
+        },
       },
-      skip: page * 10,
-      take: 10,
+      skip: page * MEMBER_PER_PAGE,
+      take: MEMBER_PER_PAGE,
     });
+    const totalMembers = await request.server.prisma.user.count({
+      where: {
+        ...search_condition,
+        ...role_condition,
+        role: {
+          not: "SUPERADMIN",
+        },
+      },
+    });
+    const totalPages = Math.ceil(totalMembers / MEMBER_PER_PAGE);
 
     return reply.code(200).send({
       members,
+      totalMembers,
+      totalPages,
+      rowsPerPage: MEMBER_PER_PAGE,
     });
   } catch (error) {
     console.log(error);
@@ -41,3 +58,6 @@ export async function getAllMembers(
     });
   }
 }
+
+// this is the function that will be called when the admin wants to delete a user completely from the database
+export async function deleteMember() {}
