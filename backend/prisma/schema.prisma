@@ -107,8 +107,8 @@ enum PROPOSAL_STATUS {
 model Client {
   id Int @id @default(autoincrement())
   name String // this could be an individual or a company
-  email String
-  phone String
+  email String?
+  phone String?
   workspaces ClientInWorkspace[]
 }
 
