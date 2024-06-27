@@ -20,7 +20,7 @@ async function main() {
         lastname: adminLastname,
         email: adminEmail,
         password: hashedPassword,
-        role: "MANAGER",
+        role: "SUPERADMIN",
       },
     });
   }
