@@ -11,10 +11,19 @@ const getAllMembersSchema = z.object({
   role: z.enum(["MANAGER", "CLIENT", "EMPLOYEE"]).optional(),
 });
 
+const deleteMemberSchema = z.object({
+  id: z.string({
+    invalid_type_error: "Id must be a string",
+    required_error: "Id is required",
+  }),
+});
+
 export type GetAllMembersInput = z.infer<typeof getAllMembersSchema>;
+export type DeleteMemberInput = z.infer<typeof deleteMemberSchema>;
 export const { schemas: memberSchemas, $ref } = buildJsonSchemas(
   {
     getAllMembersSchema,
+    deleteMemberSchema,
   },
   {
     $id: "member",
