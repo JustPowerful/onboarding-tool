@@ -14,6 +14,7 @@ import {
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import SettingsTab from "@/components/workspace/tabs/SettingsTab.vue";
+import ClientsTab from "@/components/workspace/tabs/ClientsTab.vue";
 const route = useRoute();
 
 const workspaceId = Number(route.params.id);
@@ -90,6 +91,12 @@ onMounted(async () => {
         </div>
         <div v-if="tab === 'SETTINGS'">
           <SettingsTab
+            :workspace-id="workspaceId"
+            :refresh-workspace="getWorkspace"
+          />
+        </div>
+        <div v-if="tab === 'CLIENTS'">
+          <ClientsTab
             :workspace-id="workspaceId"
             :refresh-workspace="getWorkspace"
           />
