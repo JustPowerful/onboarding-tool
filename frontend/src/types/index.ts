@@ -4,7 +4,7 @@ export interface UserData {
   lastname: string;
   email: string;
   password?: string;
-  role: "MANAGER" | "EMPLOYEE" | "CLIENT";
+  role: "MANAGER" | "EMPLOYEE" | "CLIENT" | "SUPERADMIN";
 }
 
 export interface WorkspaceData {
