@@ -162,7 +162,7 @@ onMounted(() => {
           >
         </div>
         <ChevronRight :size="26" />
-        <div>
+        <div v-if="task">
           {{ task.name }}
         </div>
       </div>
