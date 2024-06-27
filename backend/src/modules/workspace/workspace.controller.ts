@@ -97,7 +97,7 @@ export async function getWorkspacesHandler(
       return reply.code(404).send({ message: "User not found" });
     }
 
-    if (user?.role === "MANAGER") {
+    if (user?.role === "MANAGER" || user?.role === "SUPERADMIN") {
       const workspaces = await request.server.prisma.workspace.findMany();
       return reply.code(200).send({
         message: "Workspaces managed by you are listed successfully",
