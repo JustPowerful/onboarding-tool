@@ -14,7 +14,10 @@ async function proposalRoute(server: FastifyInstance) {
   server.post(
     "/create",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "EMPLOYEE", "SUPERADMIN"]),
+      ],
       schema: {
         body: $ref("createProposalSchema"),
       },
@@ -25,7 +28,10 @@ async function proposalRoute(server: FastifyInstance) {
   server.patch(
     "/update",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "SUPERADMIN", "EMPLOYEE"]),
+      ],
       schema: {
         body: $ref("updateProposalSchema"),
       },
@@ -35,7 +41,7 @@ async function proposalRoute(server: FastifyInstance) {
   server.delete(
     "/delete/:id",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER"])],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
       schema: {
         params: $ref("deleteProposalSchema"),
       },
@@ -45,7 +51,10 @@ async function proposalRoute(server: FastifyInstance) {
   server.get(
     "/paginate",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "EMPLOYEE", "SUPERADMIN"]),
+      ],
       schema: {
         querystring: $ref("paginateProposalSchema"),
       },
@@ -55,7 +64,10 @@ async function proposalRoute(server: FastifyInstance) {
   server.get(
     "/getbyid/:id",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "EMPLOYEE", "SUPERADMIN"]),
+      ],
       schema: {
         params: $ref("getProposalByIdSchema"),
       },

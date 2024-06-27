@@ -6,6 +6,7 @@ import {
 } from "./auth.controller";
 import { $ref } from "./auth.schema";
 import { authMiddleware } from "../../middlewares/auth.middleware";
+import roleMiddleware from "../../middlewares/role.middleware";
 
 async function authRoute(server: FastifyInstance) {
   server.post(
@@ -14,6 +15,7 @@ async function authRoute(server: FastifyInstance) {
       schema: {
         body: $ref("createUserSchema"),
       },
+      preHandler: [authMiddleware, roleMiddleware(["SUPERADMIN"])],
     },
     registerUserHandler
   );

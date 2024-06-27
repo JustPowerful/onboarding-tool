@@ -17,7 +17,10 @@ async function checklistRoute(server: FastifyInstance) {
       schema: {
         body: $ref("createChecklistSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "EMPLOYEE", "SUPERADMIN"]),
+      ],
     },
     createChecklist
   );
@@ -27,7 +30,10 @@ async function checklistRoute(server: FastifyInstance) {
       schema: {
         params: $ref("deleteChecklistSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "EMPLOYEE", "SUPERADMIN"]),
+      ],
     },
     deleteChecklist
   );
@@ -44,14 +50,20 @@ async function checklistRoute(server: FastifyInstance) {
       schema: {
         body: $ref("updateChecklistSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "EMPLOYEE", "SUPERADMIN"]),
+      ],
     },
     updateChecklist
   );
   server.patch(
     "/updateorder",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "EMPLOYEE", "SUPERADMIN"]),
+      ],
     },
     updateChecklistOrder
   );

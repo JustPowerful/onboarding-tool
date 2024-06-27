@@ -12,7 +12,7 @@ import {
 } from "./workspace.controller";
 import { $ref } from "./workspace.schema";
 import { authMiddleware } from "../../middlewares/auth.middleware";
-import { managerMiddleware } from "../../middlewares/manager.middleware";
+import roleMiddleware from "../../middlewares/role.middleware";
 
 async function workspaceRoute(server: FastifyInstance) {
   server.post(
@@ -21,7 +21,7 @@ async function workspaceRoute(server: FastifyInstance) {
       schema: {
         body: $ref("createWorkspaceSchema"),
       },
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
     },
     createWorkspaceHandler
   );
@@ -31,7 +31,7 @@ async function workspaceRoute(server: FastifyInstance) {
       schema: {
         params: $ref("deleteWorkspaceSchema"),
       },
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
     },
     deleteWorkspaceHandler
   );
@@ -41,7 +41,7 @@ async function workspaceRoute(server: FastifyInstance) {
       schema: {
         body: $ref("updateWorkspaceSchema"),
       },
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
     },
     updateWorkspaceHandler
   );
@@ -69,7 +69,7 @@ async function workspaceRoute(server: FastifyInstance) {
   server.post(
     "/addmember",
     {
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
       schema: {
         body: $ref("addMemberSchema"),
       },
@@ -80,7 +80,7 @@ async function workspaceRoute(server: FastifyInstance) {
   server.delete(
     "/removemember",
     {
-      preHandler: [authMiddleware, managerMiddleware],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
       schema: {
         body: $ref("removeMemberSchema"),
       },

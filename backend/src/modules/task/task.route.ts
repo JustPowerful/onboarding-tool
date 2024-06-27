@@ -20,7 +20,10 @@ async function taskRoute(server: FastifyInstance) {
       schema: {
         body: $ref("createTaskSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "SUPERADMIN", "EMPLOYEE"]),
+      ],
     },
     createTask
   );
@@ -30,7 +33,10 @@ async function taskRoute(server: FastifyInstance) {
       schema: {
         body: $ref("updateTaskSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "SUPERADMIN", "EMPLOYEE"]),
+      ],
     },
     updateTask
   );
@@ -40,7 +46,10 @@ async function taskRoute(server: FastifyInstance) {
       schema: {
         params: $ref("deleteTaskSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "SUPERADMIN", "EMPLOYEE"]),
+      ],
     },
     deleteTask
   );
@@ -51,7 +60,7 @@ async function taskRoute(server: FastifyInstance) {
       schema: {
         body: $ref("assignMemberSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER"])],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
     },
     assignMember
   );
@@ -62,7 +71,7 @@ async function taskRoute(server: FastifyInstance) {
       schema: {
         body: $ref("removeAssignementSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER"])],
+      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "SUPERADMIN"])],
     },
     removeAssignement
   );
@@ -72,14 +81,20 @@ async function taskRoute(server: FastifyInstance) {
       schema: {
         querystring: $ref("getAssignementsSchema"),
       },
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "SUPERADMIN", "EMPLOYEE"]),
+      ],
     },
     getAssignements
   );
   server.get(
     "/getunassignedmembers",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "SUPERADMIN", "EMPLOYEE"]),
+      ],
       schema: {
         querystring: $ref("getUnassignedMembersSchema"),
       },
@@ -89,7 +104,10 @@ async function taskRoute(server: FastifyInstance) {
   server.get(
     "/gettaskbyid/:id",
     {
-      preHandler: [authMiddleware, roleMiddleware(["MANAGER", "EMPLOYEE"])],
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(["MANAGER", "SUPERADMIN", "EMPLOYEE"]),
+      ],
       schema: {
         params: $ref("getTaskByIdSchema"),
       },
