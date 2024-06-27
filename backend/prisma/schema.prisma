@@ -45,6 +45,7 @@ model Workspace {
   name String
   users UserInWorkspace[] 
   checklists Checklist[]
+  clients ClientInWorkspace[]
 }
 
 model Checklist {
@@ -99,6 +100,30 @@ model Proposal {
 
 enum PROPOSAL_STATUS {
   PENDING
+  APPROVED
+  REJECTED
+}
+
+model Client {
+  id Int @id @default(autoincrement())
+  name String // this could be an individual or a company
+  email String
+  phone String
+  workspaces ClientInWorkspace[]
+}
+
+model ClientInWorkspace  {
+  id Int @id @default(autoincrement())
+  clientId Int
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  workspaceId Int
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  status CLIENT_STATUS @default(DEVELOPMENT)
+}
+
+enum CLIENT_STATUS {
+  DEVELOPMENT
+  REVIEW
   APPROVED
   REJECTED
 }
