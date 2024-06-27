@@ -4,6 +4,7 @@ import { Ellipsis, Pencil, Save, Table2, Trash, X } from "lucide-vue-next";
 import { defineProps, onMounted, onUnmounted, ref } from "vue";
 import BaseInput from "../form/BaseInput.vue";
 import { AxiosPrivate } from "@/api";
+import Modal from "../templates/Modal.vue";
 
 const props = defineProps<{
   workspace: WorkspaceData;
@@ -78,14 +79,8 @@ async function saveData() {
 }
 </script>
 <template>
-  <div
-    v-if="toggleEdit"
-    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center"
-  >
-    <div class="w-[300px] bg-white p-4 rounded-md relative">
-      <button class="absolute top-2 right-2 text-red-500">
-        <X :size="20" @click="toggleEdit = !toggleEdit" />
-      </button>
+  <Modal :width="400" :show="toggleEdit" @close="toggleEdit = !toggleEdit">
+    <div>
       <div class="flex gap-2 items-center">
         <span class="text-red-500"><Table2 :size="24" /></span>
         <span class="font-semibold"> Edit: {{ workspace.name }}</span>
@@ -110,47 +105,38 @@ async function saveData() {
         >
       </button>
     </div>
-  </div>
-  <div
-    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center"
-    v-if="toggleDelete"
+  </Modal>
+  <Modal
+    :width="400"
+    :show="toggleDelete"
+    @close="toggleDelete = !toggleDelete"
   >
-    <div
-      class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center"
-    >
-      <div class="w-[300px] bg-white p-4 rounded-md relative">
-        <button
-          @click="toggleDelete = false"
-          class="absolute top-2 right-2 text-red-500"
-        >
-          <X :size="20" @click="toggleDelete = !toggleDelete" />
-        </button>
-        <div class="flex gap-2 items-center">
-          <span class="text-red-500"><Trash :size="24" /></span>
-          <span class="font-semibold"> Delete: {{ workspace.name }}</span>
-        </div>
-        <div class="mt-4 mb-2">
-          <p>Are you sure you want to delete this workspace?</p>
-        </div>
-        <button
-          @click="onDeleteWorkspace"
-          class="text-white bg-red-500 p-2 w-full rounded-md hover:bg-red-700 flex items-center justify-center gap-1"
-        >
-          <span v-if="loading">
-            <v-progress-circular
-              v-if="loading"
-              indeterminate
-              size="20"
-              color="red"
-            />
-          </span>
-          <span class="flex gap-1 items-center" v-else
-            ><Trash :size="20" /> Delete</span
-          >
-        </button>
+    <div>
+      <div class="flex gap-2 items-center">
+        <span class="text-red-500"><Trash :size="24" /></span>
+        <span class="font-semibold"> Delete: {{ workspace.name }}</span>
       </div>
+      <div class="mt-4 mb-2">
+        <p>Are you sure you want to delete this workspace?</p>
+      </div>
+      <button
+        @click="onDeleteWorkspace"
+        class="text-white bg-red-500 p-2 w-full rounded-md hover:bg-red-700 flex items-center justify-center gap-1"
+      >
+        <span v-if="loading">
+          <v-progress-circular
+            v-if="loading"
+            indeterminate
+            size="20"
+            color="red"
+          />
+        </span>
+        <span class="flex gap-1 items-center" v-else
+          ><Trash :size="20" /> Delete</span
+        >
+      </button>
     </div>
-  </div>
+  </Modal>
   <RouterLink :to="`/workspace/${workspace.id}`">
     <div class="relative border-2 border-zinc-200 bg-white rounded-md p-4">
       <div class="absolute top-3 right-4">

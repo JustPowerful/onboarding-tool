@@ -5,6 +5,7 @@ import { UserCheck, X } from "lucide-vue-next";
 import { ref, defineProps, watch, type Component } from "vue";
 import AssignementCard from "./AssignementCard.vue";
 import Paginator from "primevue/paginator";
+import Modal from "../templates/Modal.vue";
 
 const props = defineProps<{
   workspaceId: number;
@@ -84,74 +85,57 @@ watch(
 </script>
 <template>
   <button v-bind="$attrs" @click="toggle = !toggle"><slot /></button>
-  <div
-    v-if="toggle"
-    class="fixed top-0 left-0 bg-black bg-opacity-50 w-full h-screen z-50 flex justify-center items-center"
-  >
-    <div
-      class="relative w-full max-w-[400px] bg-white p-3 rounded-md flex flex-col"
-    >
-      <!-- close buton -->
-      <button
-        @click="toggle = !toggle"
-        class="absolute top-2 right-2 p-2 hover:bg-zinc-300 text-red-500 rounded-full"
-      >
-        <X :size="18" />
-      </button>
-      <div class="text-lg font-bold flex items-center gap-1">
-        <UserCheck :size="18" />
-        Assignments
-      </div>
-      <div class="flex gap-1">
-        <button
-          @click="tab = 0"
-          :class="`border-b w-full py-2 text-left ${
-            tab === 0 ? 'border-red-500 text-red-500' : ''
-          }`"
-        >
-          All users
-        </button>
-        <button
-          @click="tab = 1"
-          :class="`border-b w-full py-2 text-left ${
-            tab === 1 ? 'border-red-500 text-red-500' : ''
-          }`"
-        >
-          Assigned Members
-        </button>
-      </div>
-      <div v-if="tab === 0">
-        <!-- All users -->
-        <div v-for="member in members">
-          <AssignementCard
-            :fetch-checklists="fetchChecklists"
-            :task-id="taskId"
-            :fetch-unassigned="fetchUnassigned"
-            :fetch-assigned-members="fetchAssignedMembers"
-            :is-assigned="false"
-            :member="member"
-          />
-        </div>
-      </div>
-      <div v-else>
-        <!-- Assigned Members -->
-        <div v-for="member in members">
-          <AssignementCard
-            :fetch-checklists="fetchChecklists"
-            :task-id="taskId"
-            :fetch-unassigned="fetchUnassigned"
-            :fetch-assigned-members="fetchAssignedMembers"
-            :is-assigned="true"
-            :member="member"
-          />
-        </div>
-      </div>
-      <Paginator
-        v-model:first="first"
-        :totalRecords="totalUsers"
-        :rows="rows"
-      />
-      <!-- <Paginator v-model:rows="rows" v-model:first="first" /> -->
+  <Modal :width="400" :show="toggle" @close="toggle = !toggle">
+    <!-- close buton -->
+
+    <div class="text-lg font-bold flex items-center gap-1">
+      <UserCheck :size="18" />
+      Assignments
     </div>
-  </div>
+    <div class="flex gap-1">
+      <button
+        @click="tab = 0"
+        :class="`border-b w-full py-2 text-left ${
+          tab === 0 ? 'border-red-500 text-red-500' : ''
+        }`"
+      >
+        All users
+      </button>
+      <button
+        @click="tab = 1"
+        :class="`border-b w-full py-2 text-left ${
+          tab === 1 ? 'border-red-500 text-red-500' : ''
+        }`"
+      >
+        Assigned Members
+      </button>
+    </div>
+    <div v-if="tab === 0">
+      <!-- All users -->
+      <div v-for="member in members">
+        <AssignementCard
+          :fetch-checklists="fetchChecklists"
+          :task-id="taskId"
+          :fetch-unassigned="fetchUnassigned"
+          :fetch-assigned-members="fetchAssignedMembers"
+          :is-assigned="false"
+          :member="member"
+        />
+      </div>
+    </div>
+    <div v-else>
+      <!-- Assigned Members -->
+      <div v-for="member in members">
+        <AssignementCard
+          :fetch-checklists="fetchChecklists"
+          :task-id="taskId"
+          :fetch-unassigned="fetchUnassigned"
+          :fetch-assigned-members="fetchAssignedMembers"
+          :is-assigned="true"
+          :member="member"
+        />
+      </div>
+    </div>
+    <Paginator v-model:first="first" :totalRecords="totalUsers" :rows="rows" />
+  </Modal>
 </template>

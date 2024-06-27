@@ -7,6 +7,7 @@ import { AxiosPrivate } from "@/api";
 import type { UserData } from "@/types";
 import MemberCard from "./MemberCard.vue";
 import Paginator from "primevue/paginator";
+import Modal from "../templates/Modal.vue";
 const props = defineProps<{
   workspaceId: number;
 }>();
@@ -108,7 +109,7 @@ watch(
     v-if="toggle"
     class="fixed bg-black bg-opacity-50 top-0 left-0 w-full h-screen z-50 flex items-center justify-center"
   >
-    <div
+    <!-- <div
       class="relative w-full max-w-[400px] bg-white rounded-md p-4 text-base flex flex-col gap-1"
     >
       <button
@@ -116,7 +117,9 @@ watch(
       >
         <X :size="24" @click="toggle = false" />
       </button>
-      <div class="flex items-center gap-1 text-xl">
+    </div> -->
+    <Modal :width="400" :show="toggle" @close="toggle = !toggle">
+      <div class="flex items-center gap-1 text-xl font-semibold">
         <Users :size="18" />
         Staff
       </div>
@@ -179,6 +182,6 @@ watch(
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   </div>
 </template>

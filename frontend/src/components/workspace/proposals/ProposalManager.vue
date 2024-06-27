@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AxiosPrivate } from "@/api";
+import Modal from "@/components/templates/Modal.vue";
 import type { TaskData } from "@/types";
 import { CheckCheck, ListChecks, X } from "lucide-vue-next";
 import { ref, defineProps, onMounted } from "vue";
@@ -39,18 +40,9 @@ onMounted(() => {
     </div>
   </button>
   <!-- Toggled window background -->
-  <div
-    v-if="toggle"
-    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 flex justify-center items-center"
-  >
+  <Modal :width="400" :show="toggle" @close="toggle = !toggle">
     <!-- The window itself ✨ -->
-    <div class="relative w-full max-w-[400px] bg-white px-2 py-4 rounded-md">
-      <button
-        @click="toggle = false"
-        class="absolute top-2 right-2 text-red-500 p-2 rounded-full hover:bg-zinc-400"
-      >
-        <X :size="20" />
-      </button>
+    <div>
       Redirecting you to the solution proposition page, proceed?
       <div class="grid grid-cols-2 gap-2 mt-2">
         <RouterLink
@@ -62,5 +54,5 @@ onMounted(() => {
         <button class="bg-zinc-700 p-2 text-white rounded-md">Cancel</button>
       </div>
     </div>
-  </div>
+  </Modal>
 </template>

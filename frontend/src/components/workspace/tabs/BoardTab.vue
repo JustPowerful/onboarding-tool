@@ -7,6 +7,7 @@ import Checklist from "../Checklist.vue";
 import { AxiosPrivate } from "@/api";
 import type { ChecklistData } from "@/types";
 import BaseInput from "@/components/form/BaseInput.vue";
+import Modal from "@/components/templates/Modal.vue";
 
 const checklists = ref<ChecklistData[]>([]);
 
@@ -71,16 +72,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    v-if="toggleCreate"
-    class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex justify-center items-center"
+  <Modal
+    :width="300"
+    :show="toggleCreate"
+    @close="toggleCreate = !toggleCreate"
   >
-    <div
-      class="relative bg-white p-4 rounded-md w-full max-w-[300px] flex flex-col gap-4"
-    >
-      <button class="absolute top-3 right-3 text-red-500">
-        <X :size="20" @click="toggleCreate = !toggleCreate" />
-      </button>
+    <div class="flex flex-col gap-2">
       <BaseInput
         label="Checklist name"
         :value="checklistName"
@@ -101,7 +98,7 @@ onMounted(async () => {
         </span>
       </button>
     </div>
-  </div>
+  </Modal>
   <div class="absolute top-0 left-0 w-full h-full bg-white p-10">
     <!-- create checklist button -->
     <div class="absolute top-4 right-4 z-40">

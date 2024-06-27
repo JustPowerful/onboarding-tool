@@ -16,6 +16,7 @@ import Editor from "primevue/editor";
 import BaseInput from "../form/BaseInput.vue";
 import AssignmentManager from "./AssignmentManager.vue";
 import ProposalManager from "./proposals/ProposalManager.vue";
+import Modal from "../templates/Modal.vue";
 
 const props = defineProps<{
   task: TaskData;
@@ -102,20 +103,15 @@ async function fetchAssignedMembers() {
 <template>
   <div>
     <!-- task menu  -->
-    <div
-      v-if="toggleTaskMenu"
-      class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex justify-center items-center"
+    <Modal
+      :width="800"
+      :show="toggleTaskMenu"
+      @close="
+        toggleTaskMenu = !toggleTaskMenu;
+        enableDragging();
+      "
     >
-      <div class="relative w-full max-w-[760px] bg-white rounded-md p-4">
-        <button
-          @click="
-            toggleTaskMenu = false;
-            enableDragging();
-          "
-          class="absolute top-3 right-3 text-red-500"
-        >
-          <X :size="21" />
-        </button>
+      <div>
         <div class="grid grid-cols-[8fr_3fr] gap-4">
           <div>
             <div class="flex gap-1 items-center text-xl mb-3">
@@ -236,7 +232,7 @@ async function fetchAssignedMembers() {
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
 
     <!-- task -->
     <div

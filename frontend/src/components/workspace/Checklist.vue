@@ -6,6 +6,7 @@ import { defineProps, onMounted, onUnmounted, ref } from "vue";
 import Task from "./Task.vue";
 import { AxiosPrivate } from "@/api";
 import BaseInput from "../form/BaseInput.vue";
+import Modal from "../templates/Modal.vue";
 const props = defineProps<{
   checklist: ChecklistData;
   updateorder: () => void;
@@ -108,24 +109,17 @@ onUnmounted(() => {
   <div>
     <!-- start: interactive menus -->
 
-    <div
-      v-if="toggleEdit"
-      class="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center"
+    <Modal
+      :width="300"
+      :show="toggleEdit"
+      @close="
+        toggleEdit = !toggleEdit;
+        enableDragging();
+      "
     >
-      <div
-        class="bg-white w-full max-w-[250px] p-4 flex flex-col gap-2 rounded-md"
-      >
+      <div class="flex flex-col gap-2">
         <div class="flex justify-between items-center">
           <div class="text-lg font-semibold">Edit Checklist</div>
-          <button
-            @click="
-              toggleEdit = false;
-              enableDragging();
-            "
-            class="text-red-500"
-          >
-            <X :size="20" />
-          </button>
         </div>
         <BaseInput
           label="Checklist Name"
@@ -150,22 +144,17 @@ onUnmounted(() => {
           </span>
         </button>
       </div>
-    </div>
+    </Modal>
 
-    <div
-      v-if="toggleDelete"
-      class="fixed top-0 left-0 z-50 w-full h-screen bg-black bg-opacity-50 flex items-center justify-center"
+    <Modal
+      :width="300"
+      :show="toggleDelete"
+      @close="
+        toggleDelete = !toggleDelete;
+        enableDragging();
+      "
     >
-      <div class="relative bg-white p-4 rounded-md w-[300px]">
-        <button
-          @click="
-            toggleDelete = false;
-            enableDragging();
-          "
-          class="absolute top-4 right-4 text-red-500"
-        >
-          <X :size="20" />
-        </button>
+      <div>
         <div class="text-lg font-semibold mb-4">Delete Checklist</div>
         <div class="mb-4">Are you sure you want to delete this checklist?</div>
 
@@ -185,7 +174,7 @@ onUnmounted(() => {
           >
         </button>
       </div>
-    </div>
+    </Modal>
     <!--end: interactive menus -->
     <div
       class="relative bg-white border-2 min-w-[240px] max-w-[240px] min-h-[120px] h-fit p-2 border-zinc-200 rounded-md flex flex-col gap-3"
