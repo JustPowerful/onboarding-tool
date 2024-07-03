@@ -174,7 +174,7 @@ async function saveData() {
         <span class="text-red-500"><Table2 :size="24" /></span>
         <span class="font-semibold">{{ workspace.name }}</span>
       </div>
-      <div class="text-zinc-500">22 Clients</div>
+      <div class="text-zinc-500">{{ workspace.clients.length }} Clients</div>
       <!-- this needs to be changed later to display dynamically -->
     </div>
   </RouterLink>
