@@ -107,7 +107,7 @@ async function fetchAssignedMembers() {
       :width="800"
       :show="toggleTaskMenu"
       @close="
-        toggleTaskMenu = !toggleTaskMenu;
+        toggleTaskMenu = false;
         enableDragging();
       "
     >
