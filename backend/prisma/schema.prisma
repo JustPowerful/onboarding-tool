@@ -109,6 +109,8 @@ model Client {
   name String // this could be an individual or a company
   email String?
   phone String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
   workspaces ClientInWorkspace[]
 }
 
