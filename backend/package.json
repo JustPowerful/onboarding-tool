@@ -7,7 +7,7 @@
     "seed": "ts-node ./prisma/seed.ts"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "prisma migrate dev && tsc -p tsconfig.json",
     "start": "node index.js",
     "dev": "tsnd --respawn --transpile-only --exit-child src/index.ts"
   },
