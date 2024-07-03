@@ -38,6 +38,15 @@ for (const schema of [
   server.addSchema(schema);
 }
 
+// CORS
+import cors from "@fastify/cors";
+server.register(cors, {
+  origin:
+    process.env.MODE === "production"
+      ? process.env.ALLOWED_CORS_ENDPOINT
+      : "http://localhost:5173",
+});
+
 // registering plugins
 server.register(prismaPlugin);
 
