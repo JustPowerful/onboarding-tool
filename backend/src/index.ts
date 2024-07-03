@@ -60,7 +60,7 @@ if (process.env.PORT) {
 
 // host condition for production
 var HOST = {};
-if (process.env.NODE_ENV === "production") {
+if (process.env.MODE === "production") {
   HOST = { host: "0.0.0.0" };
 }
 
