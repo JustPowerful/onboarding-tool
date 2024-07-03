@@ -98,7 +98,11 @@ export async function getWorkspacesHandler(
     }
 
     if (user?.role === "MANAGER" || user?.role === "SUPERADMIN") {
-      const workspaces = await request.server.prisma.workspace.findMany();
+      const workspaces = await request.server.prisma.workspace.findMany({
+        include: {
+          clients: true,
+        },
+      });
       return reply.code(200).send({
         message: "Workspaces managed by you are listed successfully",
         workspaces,
@@ -111,7 +115,11 @@ export async function getWorkspacesHandler(
           userId: Number(user.id),
         },
         include: {
-          workspace: true,
+          workspace: {
+            include: {
+              clients: true,
+            },
+          },
         },
       });
 
