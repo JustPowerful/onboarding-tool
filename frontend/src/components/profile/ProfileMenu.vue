@@ -4,7 +4,7 @@ import { AxiosPrivate } from "@/api";
 import type { UserData } from "@/types";
 
 // icons
-import { GanttChart, User } from "lucide-vue-next";
+import { GanttChart, Settings, Settings2, User, Users } from "lucide-vue-next";
 const user = ref<UserData | null>();
 const toggle = ref(false);
 const menuRef = ref<HTMLElement | null>(null);
@@ -56,6 +56,14 @@ function handleClickOutside(event: MouseEvent) {
           {{ user?.firstname[0] }}{{ user?.lastname[0] }}
         </div>
         <div>{{ user?.firstname }} {{ user?.lastname }}</div>
+        <div class="capitalize text-sm">
+          Role: {{ user?.role.toLocaleLowerCase() }}
+        </div>
+        <!-- <div class="">
+          <RouterLink to="/usersettings" class="text-red-500">
+            <Settings :size="12" />
+          </RouterLink>
+        </div> -->
       </div>
       <div class="flex flex-col gap-1 pt-2">
         <hr />
@@ -71,6 +79,13 @@ function handleClickOutside(event: MouseEvent) {
           to="/workspaces"
         >
           <GanttChart :size="16" /> <span>Workspaces</span></RouterLink
+        >
+        <RouterLink
+          v-if="user?.role === 'SUPERADMIN'"
+          class="hover:bg-red-500 hover:text-white p-1 pl-2 rounded-sm flex items-center gap-1"
+          to="/users"
+        >
+          <Users :size="16" /> <span>Manage users</span></RouterLink
         >
       </div>
 
