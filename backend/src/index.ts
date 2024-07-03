@@ -50,7 +50,12 @@ server.register(memberRoute, { prefix: "/api/member" });
 server.register(proposalRoute, { prefix: "/api/proposal" });
 server.register(clientRoute, { prefix: "/api/client" });
 
-const PORT = 3000;
+var PORT;
+if (process.env.PORT) {
+  PORT = Number(process.env.PORT);
+} else {
+  PORT = 3000;
+}
 server.listen({ port: PORT }, (err, address) => {
   if (err) {
     console.error(err);
