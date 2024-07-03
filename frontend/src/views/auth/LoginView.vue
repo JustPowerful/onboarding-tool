@@ -1,26 +1,28 @@
 <script setup lang="ts">
 import { AxiosPublic } from "@/api";
 import BaseInput from "@/components/form/BaseInput.vue";
+import { ShieldAlert } from "lucide-vue-next";
 
 import { ref } from "vue";
 const email = ref("");
 const password = ref("");
 const loading = ref(false);
+const msgError = ref(false);
 
 // define the method to handle the form submission
 const handleSubmit = async () => {
-  loading.value = true;
-  const { data, status } = await AxiosPublic.post("/auth/login", {
-    email: email.value,
-    password: password.value,
-  });
-  if (status === 200) {
-    localStorage.setItem("token", data.token);
-    window.location.href = "/";
-  }
   try {
+    loading.value = true;
+    const { data, status } = await AxiosPublic.post("/auth/login", {
+      email: email.value,
+      password: password.value,
+    });
+    if (status === 200) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "/";
+    }
   } catch (error) {
-    console.error(error);
+    msgError.value = true;
   } finally {
     loading.value = false;
   }
@@ -36,7 +38,12 @@ const handleSubmit = async () => {
             Access your account for personalized insights and updates
           </div>
         </div>
-
+        <div
+          v-if="msgError"
+          class="flex items-center justify-center gap-1 text-sm text-red-500"
+        >
+          <ShieldAlert :size="14" /> login or password are incorrect
+        </div>
         <BaseInput
           label="E-mail"
           v-model="email"
