@@ -26,6 +26,7 @@ async function createTask() {
       name: taskName.value,
       checklistId: props.checklist.id,
     });
+    taskName.value = "";
     await props.fetchChecklists();
   } catch (error) {
     throw error;
