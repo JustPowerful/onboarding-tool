@@ -41,10 +41,10 @@ for (const schema of [
 // CORS
 import cors from "@fastify/cors";
 server.register(cors, {
-  origin:
-    process.env.MODE === "production"
-      ? process.env.ALLOWED_CORS_ENDPOINT
-      : "http://localhost:5173",
+  origin: "*",
+  methods: "*",
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 });
 
 // registering plugins
