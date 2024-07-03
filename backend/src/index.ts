@@ -50,13 +50,21 @@ server.register(memberRoute, { prefix: "/api/member" });
 server.register(proposalRoute, { prefix: "/api/proposal" });
 server.register(clientRoute, { prefix: "/api/client" });
 
+// post condition for production
 var PORT;
 if (process.env.PORT) {
   PORT = Number(process.env.PORT);
 } else {
   PORT = 3000;
 }
-server.listen({ port: PORT }, (err, address) => {
+
+// host condition for production
+var HOST = {};
+if (process.env.NODE_ENV === "production") {
+  HOST = { host: "0.0.0.0" };
+}
+
+server.listen({ port: PORT, ...HOST }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
