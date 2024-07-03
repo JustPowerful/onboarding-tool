@@ -10,6 +10,7 @@ export interface UserData {
 export interface WorkspaceData {
   id: number;
   name: string;
+  clients: Client[];
 }
 
 export interface ChecklistData {
@@ -46,8 +47,24 @@ export interface Proposal {
     email: string;
     firstname: string;
     lastname: string;
+
     role: "MANAGER" | "EMPLOYEE" | "CLIENT";
   };
+}
+
+export interface Client {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  workspaces: {
+    id: number;
+    workspace: {
+      id: number;
+      name: string;
+    };
+    status: "INSCRIBED" | "PENDING";
+  }[];
 }
 
 export type WorkspaceTab = "BOARD" | "CLIENTS" | "SETTINGS";
